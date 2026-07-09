@@ -18,8 +18,8 @@
 | 구분 | 스택 |
 |---|---|
 | Language | Java 21 |
-| Framework | Spring Boot 3.x |
-| Database | MySQL 8.x |
+| Framework | Spring Boot 4.1.0 |
+| Database | MySQL 8.0.25 |
 | ORM | Spring Data JPA (Hibernate) |
 | Auth | Spring Security + JWT (jjwt 라이브러리) |
 | API 문서 | Springdoc OpenAPI (Swagger UI)|
