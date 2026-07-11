@@ -46,3 +46,36 @@ MoneyLog
 ## 📡 API 개요
 | 기능 | Method | Endpoint |
 |---|---|---|
+
+---
+## ERD
+```
+erDiagram
+    사용자 ||--o{ 지출 : "작성"
+    사용자 ||--o{ 카테고리 : "소유"
+    카테고리 ||--o{ 지출 : "분류"
+
+    사용자 {
+        int ID PK
+        string 이메일
+        string 사용자명
+        string 비밀번호
+    }
+
+    카테고리 {
+        int ID PK
+        int 사용자ID FK "UK(사용자ID+카테고리명)"
+        string 카테고리명 "UK(사용자ID+카테고리명)"
+    }
+
+    지출 {
+        int ID PK
+        int 사용자ID FK
+        int 카테고리ID FK
+        datetime 생성일시
+        datetime 수정일시
+        decimal 금액
+        string 내용
+        string 메모
+    }
+```
