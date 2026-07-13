@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -23,6 +26,12 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    @OneToMany(mappedBy = "user")
+    private List<Expense> expenses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Category> categories = new ArrayList<>();
 
     @Builder
     public User(String email, String userName, String password){
