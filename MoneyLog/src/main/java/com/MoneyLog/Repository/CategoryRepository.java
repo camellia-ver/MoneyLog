@@ -1,4 +1,4 @@
-package com.MoneyLog.repository;
+package com.MoneyLog.Repository;
 
 import com.MoneyLog.Model.Category;
 import com.MoneyLog.Model.User;
