@@ -1,6 +1,6 @@
-package com.MoneyLog.Repository;
+package com.MoneyLog.repository;
 
-import com.MoneyLog.Model.User;
+import com.MoneyLog.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

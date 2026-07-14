@@ -1,4 +1,4 @@
-package com.MoneyLog.Model;
+package com.MoneyLog.model;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

@@ -1,4 +1,4 @@
-package com.MoneyLog.DTO;
+package com.MoneyLog.dto;
 
 import lombok.Data;
 
