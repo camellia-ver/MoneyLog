@@ -5,3 +5,6 @@ build/
 application-secret.yml
 .idea/
 *.iml
+
+# DB 설정값
+application-DB.properties
