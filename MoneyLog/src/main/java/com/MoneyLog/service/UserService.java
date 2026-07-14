@@ -2,6 +2,7 @@ package com.MoneyLog.service;
 
 import com.MoneyLog.dto.UserDto;
 import com.MoneyLog.exception.DuplicateEmailException;
+import com.MoneyLog.exception.InvalidCredentialsException;
 import com.MoneyLog.model.User;
 import com.MoneyLog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,5 +30,16 @@ public class UserService {
                 .build();
 
         return userRepository.save(user);
+    }
+
+    public User login(String email, String password) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(InvalidCredentialsException::new);
+
+        if (!passwordEncoder.matches(password, user.getPassword())){
+            throw new InvalidCredentialsException();
+        }
+
+        return user;
     }
 }
