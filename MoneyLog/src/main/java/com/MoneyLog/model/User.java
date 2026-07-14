@@ -1,5 +1,6 @@
 package com.MoneyLog.model;
 
+import com.MoneyLog.enums.Role;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -32,6 +33,10 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Category> categories = new ArrayList<>();
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
 
     @Builder
     public User(String email, String userName, String password){

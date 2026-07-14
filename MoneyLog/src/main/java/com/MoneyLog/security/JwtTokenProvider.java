@@ -33,6 +33,7 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .subject(String.valueOf(user.getId()))
+                .claim("role", user.getRole().name())
                 .issuedAt(now)
                 .expiration(expiration)
                 .signWith(secretKey)
@@ -51,6 +52,10 @@ public class JwtTokenProvider {
         } catch (JwtException | IllegalArgumentException e){
             return false;
         }
+    }
+
+    public String getRoleFromToken(String token){
+        return parseClaims(token).get("role", String.class);
     }
 
     private Claims parseClaims(String token){
