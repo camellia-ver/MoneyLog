@@ -8,3 +8,6 @@ application-secret.yml
 
 # DB 설정값
 application-DB.properties
+
+# jwt
+application-secret.yml
