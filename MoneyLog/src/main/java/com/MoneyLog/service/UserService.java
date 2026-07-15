@@ -1,12 +1,10 @@
 package com.MoneyLog.service;
 
-import com.MoneyLog.dto.UserDto;
+import com.MoneyLog.dto.SignUpRequestDto;
 import com.MoneyLog.enums.Role;
-import com.MoneyLog.exception.DuplicateCategoryException;
 import com.MoneyLog.exception.DuplicateEmailException;
 import com.MoneyLog.exception.InvalidCredentialsException;
 import com.MoneyLog.exception.UserNotFoundException;
-import com.MoneyLog.model.Category;
 import com.MoneyLog.model.User;
 import com.MoneyLog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +20,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public User signUp(UserDto inputData){
+    public User signUp(SignUpRequestDto inputData){
         if (userRepository.existsByEmail(inputData.getEmail())){
             throw new DuplicateEmailException("이미 사용 중인 이메일입니다: " + inputData.getEmail());
         }

@@ -1,7 +1,7 @@
 package com.MoneyLog.api;
 
 import com.MoneyLog.dto.SignUpResponseDto;
-import com.MoneyLog.dto.UserDto;
+import com.MoneyLog.dto.SignUpRequestDto;
 import com.MoneyLog.model.User;
 import com.MoneyLog.service.UserService;
 import jakarta.validation.Valid;
@@ -20,7 +20,7 @@ public class UserApiController {
     private final UserService userService;
 
     @PostMapping("signup")
-    public ResponseEntity<SignUpResponseDto> signUp(@Valid @RequestBody UserDto request){
+    public ResponseEntity<SignUpResponseDto> signUp(@Valid @RequestBody SignUpRequestDto request){
         User user = userService.signUp(request);
 
         SignUpResponseDto dto = new SignUpResponseDto(user.getId(), user.getEmail(), user.getUserName());

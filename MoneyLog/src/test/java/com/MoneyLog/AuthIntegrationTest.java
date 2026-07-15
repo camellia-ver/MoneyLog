@@ -2,7 +2,7 @@ package com.MoneyLog;
 
 import com.MoneyLog.dto.LoginRequestDto;
 import com.MoneyLog.dto.LoginResponseDto;
-import com.MoneyLog.dto.UserDto;
+import com.MoneyLog.dto.SignUpRequestDto;
 import org.springframework.http.MediaType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class AuthIntegrationTest {
 
     @Test
     void 회원가입_로그인_흐름이_정상_동작한다() throws Exception{
-        UserDto signUpRequest = new UserDto();
+        SignUpRequestDto signUpRequest = new SignUpRequestDto();
         signUpRequest.setEmail("test@example.com");
         signUpRequest.setPassword("password123");
         signUpRequest.setUserName("홍길동");

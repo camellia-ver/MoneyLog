@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -30,5 +32,10 @@ public class CategoryService {
                 .build();
 
         return categoryRepository.save(category);
+    }
+
+    List<Category> getCategories(Long userId){
+        User user = userService.getUserById(userId);
+        return categoryRepository.findByUser(user);
     }
 }
