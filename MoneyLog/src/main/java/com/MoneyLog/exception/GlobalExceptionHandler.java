@@ -34,6 +34,16 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, message);
     }
 
+    @ExceptionHandler(DuplicateCategoryException.class)
+    public ResponseEntity<ErrorResponseDto> handleDuplicateCategory(DuplicateCategoryException e){
+        return buildErrorResponse(HttpStatus.CONFLICT, e.getMessage());
+    }
+
+    @ExceptionHandler(UserNotFoundException .class)
+    public ResponseEntity<ErrorResponseDto> handleUserNotFound(UserNotFoundException  e){
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+    }
+
     private ResponseEntity<ErrorResponseDto> buildErrorResponse(HttpStatus status, String message){
         ErrorResponseDto error = new ErrorResponseDto(
                 status.value(),
