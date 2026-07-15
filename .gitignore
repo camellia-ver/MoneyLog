@@ -10,4 +10,4 @@ application-secret.yml
 application-DB.properties
 
 # jwt
-application-secret.yml
+application-secret.properties
