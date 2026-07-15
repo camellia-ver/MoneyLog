@@ -1,8 +1,36 @@
 package com.MoneyLog.service;
 
+import com.MoneyLog.exception.DuplicateCategoryException;
+import com.MoneyLog.exception.UserNotFoundException;
+import com.MoneyLog.model.Category;
+import com.MoneyLog.model.User;
+import com.MoneyLog.repository.CategoryRepository;
+import com.MoneyLog.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CategoryService {
+    private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
 
+    @Transactional
+    public Category createCategory(Long userId, String name){
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+
+        if (categoryRepository.existsByUserAndName(user, name)){
+            throw new DuplicateCategoryException();
+        }
+
+        Category category = Category.builder()
+                .user(user)
+                .name(name)
+                .build();
+
+        return categoryRepository.save(category);
+    }
 }
