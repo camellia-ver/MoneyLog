@@ -34,7 +34,7 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    List<Category> getCategories(Long userId){
+    public List<Category> getCategories(Long userId){
         User user = userService.getUserById(userId);
         return categoryRepository.findByUser(user);
     }
