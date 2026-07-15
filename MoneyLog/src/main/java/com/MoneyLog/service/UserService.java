@@ -1,6 +1,7 @@
 package com.MoneyLog.service;
 
 import com.MoneyLog.dto.UserDto;
+import com.MoneyLog.enums.Role;
 import com.MoneyLog.exception.DuplicateEmailException;
 import com.MoneyLog.exception.InvalidCredentialsException;
 import com.MoneyLog.model.User;
@@ -27,6 +28,7 @@ public class UserService {
                 .email(inputData.getEmail())
                 .userName(inputData.getUserName())
                 .password(passwordEncoder.encode(inputData.getPassword()))
+                .role(Role.USER)
                 .build();
 
         return userRepository.save(user);
