@@ -1,7 +1,6 @@
 package com.MoneyLog.service;
 
 import com.MoneyLog.exception.DuplicateCategoryException;
-import com.MoneyLog.exception.UserNotFoundException;
 import com.MoneyLog.model.Category;
 import com.MoneyLog.model.User;
 import com.MoneyLog.repository.CategoryRepository;
@@ -15,12 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CategoryService {
     private final CategoryRepository categoryRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Transactional
     public Category createCategory(Long userId, String name){
-        User user = userRepository.findById(userId)
-                .orElseThrow(UserNotFoundException::new);
+        User user = userService.getUserById(userId);
 
         if (categoryRepository.existsByUserAndName(user, name)){
             throw new DuplicateCategoryException();

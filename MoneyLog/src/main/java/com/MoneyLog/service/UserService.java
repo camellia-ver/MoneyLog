@@ -2,8 +2,11 @@ package com.MoneyLog.service;
 
 import com.MoneyLog.dto.UserDto;
 import com.MoneyLog.enums.Role;
+import com.MoneyLog.exception.DuplicateCategoryException;
 import com.MoneyLog.exception.DuplicateEmailException;
 import com.MoneyLog.exception.InvalidCredentialsException;
+import com.MoneyLog.exception.UserNotFoundException;
+import com.MoneyLog.model.Category;
 import com.MoneyLog.model.User;
 import com.MoneyLog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -43,5 +46,10 @@ public class UserService {
         }
 
         return user;
+    }
+
+    public User getUserById(Long userId){
+        return userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
     }
 }
