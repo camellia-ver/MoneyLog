@@ -43,6 +43,11 @@ public class CategoryService {
 
     @Transactional
     public void deleteCategory(Long userId, Long categoryId){
+        Category category = getCategoryByIdAndUser(categoryId, userId);
+        categoryRepository.delete(category);
+    }
+
+    public Category getCategoryByIdAndUser(Long categoryId, Long userId){
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(CategoryNotFoundException::new);
 
@@ -50,6 +55,6 @@ public class CategoryService {
             throw new CategoryAccessDeniedException();
         }
 
-        categoryRepository.delete(category);
+        return category;
     }
 }
