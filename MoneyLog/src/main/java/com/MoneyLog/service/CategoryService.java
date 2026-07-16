@@ -1,5 +1,7 @@
 package com.MoneyLog.service;
 
+import com.MoneyLog.exception.CategoryAccessDeniedException;
+import com.MoneyLog.exception.CategoryNotFoundException;
 import com.MoneyLog.exception.DuplicateCategoryException;
 import com.MoneyLog.model.Category;
 import com.MoneyLog.model.User;
@@ -37,5 +39,17 @@ public class CategoryService {
     public List<Category> getCategories(Long userId){
         User user = userService.getUserById(userId);
         return categoryRepository.findByUser(user);
+    }
+
+    @Transactional
+    public void deleteCategory(Long userId, Long categoryId){
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(CategoryNotFoundException::new);
+
+        if (!category.getUser().getId().equals(userId)){
+            throw new CategoryAccessDeniedException();
+        }
+
+        categoryRepository.delete(category);
     }
 }

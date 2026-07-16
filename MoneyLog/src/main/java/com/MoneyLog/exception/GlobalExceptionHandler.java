@@ -39,9 +39,19 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.CONFLICT, e.getMessage());
     }
 
-    @ExceptionHandler(UserNotFoundException .class)
+    @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleUserNotFound(UserNotFoundException  e){
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+    }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleCategoryNotFound(CategoryNotFoundException e){
+        return buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(CategoryAccessDeniedException.class)
+    public ResponseEntity<ErrorResponseDto> handleCategoryAccessDenied(CategoryAccessDeniedException e){
+        return buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
     }
 
     private ResponseEntity<ErrorResponseDto> buildErrorResponse(HttpStatus status, String message){
