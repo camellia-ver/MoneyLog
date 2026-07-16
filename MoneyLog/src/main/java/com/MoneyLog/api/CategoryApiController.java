@@ -42,4 +42,13 @@ public class CategoryApiController {
                 .status(HttpStatus.OK)
                 .body(response);
     }
+
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<Void> deteleCategory(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long categoryId
+    ){
+        categoryService.deleteCategory(userId, categoryId);
+        return ResponseEntity.noContent().build();
+    }
 }
