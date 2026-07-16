@@ -1,17 +1,16 @@
 package com.MoneyLog.service;
 
 import com.MoneyLog.dto.ExpenseRequestDto;
-import com.MoneyLog.dto.ExpenseResponseDto;
 import com.MoneyLog.model.Category;
 import com.MoneyLog.model.Expense;
 import com.MoneyLog.model.User;
 import com.MoneyLog.repository.ExpenseRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ExpenseService {
     private final UserService userService;
