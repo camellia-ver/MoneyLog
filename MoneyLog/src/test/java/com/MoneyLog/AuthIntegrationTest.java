@@ -53,8 +53,6 @@ public class AuthIntegrationTest {
         LoginResponseDto loginResponse = objectMapper.readValue(responseBody, LoginResponseDto.class);
         String token = loginResponse.getToken();
 
-        // /api/some-protected-endpoint 블록 삭제!
-
         mockMvc.perform(get("/api/test/protected")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
