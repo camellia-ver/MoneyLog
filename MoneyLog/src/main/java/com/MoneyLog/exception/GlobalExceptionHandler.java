@@ -54,6 +54,17 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
     }
 
+
+    @ExceptionHandler(ExpenseNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleExpenseNotFound(ExpenseNotFoundException e){
+        return buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(ExpenseAccessDeniedException.class)
+    public ResponseEntity<ErrorResponseDto> handleExpenseAccessDenied(ExpenseAccessDeniedException e){
+        return buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
+    }
+
     private ResponseEntity<ErrorResponseDto> buildErrorResponse(HttpStatus status, String message){
         ErrorResponseDto error = new ErrorResponseDto(
                 status.value(),
