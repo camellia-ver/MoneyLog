@@ -53,4 +53,10 @@ public class Expense {
         this.content = content;
         this.memo = memo;
     }
+
+    public void updateExpense(BigDecimal amount, String content, String memo){
+        this.amount = amount;
+        this.content = content;
+        this.memo = memo;
+    }
 }
