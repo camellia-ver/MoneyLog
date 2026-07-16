@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -31,5 +33,10 @@ public class ExpenseService {
                 .build();
 
         return expenseRepository.save(expense);
+    }
+
+    public List<Expense> getExpenses(Long userId){
+        User user = userService.getUserById(userId);
+        return expenseRepository.findByUser(user);
     }
 }
