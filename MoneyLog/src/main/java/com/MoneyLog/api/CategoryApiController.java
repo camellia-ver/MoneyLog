@@ -44,7 +44,7 @@ public class CategoryApiController {
     }
 
     @DeleteMapping("/{categoryId}")
-    public ResponseEntity<Void> deteleCategory(
+    public ResponseEntity<Void> deleteCategory(
             @AuthenticationPrincipal Long userId,
             @PathVariable Long categoryId
     ){
