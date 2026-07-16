@@ -42,9 +42,20 @@ public class ExpenseService {
         return expenseRepository.findByUser(user);
     }
 
+    @Transactional
     public void deleteExpense(Long userId, Long expenseId){
         Expense expense = getExpenseByIdAndUser(expenseId, userId);
         expenseRepository.delete(expense);
+    }
+
+    @Transactional
+    public Expense updateExpense(Long userId, Long expenseId, ExpenseRequestDto request){
+        Expense expense = getExpenseByIdAndUser(expenseId, userId);
+        Category category = categoryService.getCategoryByIdAndUser(request.getCategoryId(), userId);
+
+        expense.updateExpense(category, request.getAmount(), request.getContent(), request.getMemo());
+
+        return expense;
     }
 
     public Expense getExpenseByIdAndUser(Long expenseId, Long userId){

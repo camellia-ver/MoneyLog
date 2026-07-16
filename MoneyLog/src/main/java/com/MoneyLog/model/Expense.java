@@ -54,7 +54,8 @@ public class Expense {
         this.memo = memo;
     }
 
-    public void updateExpense(BigDecimal amount, String content, String memo){
+    public void updateExpense(Category category ,BigDecimal amount, String content, String memo){
+        this.category = category;
         this.amount = amount;
         this.content = content;
         this.memo = memo;
