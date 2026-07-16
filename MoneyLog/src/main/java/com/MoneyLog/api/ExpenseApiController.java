@@ -39,4 +39,23 @@ public class ExpenseApiController {
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
+
+    @DeleteMapping("/{expenseId}")
+    public ResponseEntity<Void> deleteExpense(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long expenseId
+    ){
+        expenseService.deleteExpense(userId, expenseId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{expenseId}")
+    public ResponseEntity<ExpenseResponseDto> updateExpense(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long expenseId,
+            @Valid @RequestBody ExpenseRequestDto request
+    ){
+        Expense expense = expenseService.updateExpense(userId, expenseId, request);
+        return ResponseEntity.ok(ExpenseResponseDto.from(expense));
+    }
 }
