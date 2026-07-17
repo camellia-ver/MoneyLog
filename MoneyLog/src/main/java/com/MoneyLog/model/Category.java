@@ -39,4 +39,8 @@ public class Category {
         this.user = user;
         this.name = name;
     }
+
+    public void updateCategory(String name){
+        this.name = name;
+    }
 }
