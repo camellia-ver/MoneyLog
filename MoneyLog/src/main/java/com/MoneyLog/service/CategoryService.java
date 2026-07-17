@@ -47,6 +47,20 @@ public class CategoryService {
         categoryRepository.delete(category);
     }
 
+    @Transactional
+    public Category updateCategory(Long userId, Long categoryId, String name){
+        Category category = getCategoryByIdAndUser(categoryId, userId);
+
+        if (!category.getName().equals(name)
+                && categoryRepository.existsByUserAndName(category.getUser(), name)){
+            throw new DuplicateCategoryException();
+        }
+
+        category.updateCategory(name);
+
+        return category;
+    }
+
     public Category getCategoryByIdAndUser(Long categoryId, Long userId){
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(CategoryNotFoundException::new);
