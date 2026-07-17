@@ -51,4 +51,14 @@ public class CategoryApiController {
         categoryService.deleteCategory(userId, categoryId);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{categoryId}")
+    public  ResponseEntity<CategoryResponseDto> updateCategory(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long categoryId,
+            @Valid @RequestBody CategoryRequestDto request
+    ){
+        Category category = categoryService.updateCategory(userId, categoryId, request.getName());
+        return ResponseEntity.ok(CategoryResponseDto.from(category));
+    }
 }
