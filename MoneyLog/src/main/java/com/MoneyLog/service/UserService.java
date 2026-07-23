@@ -46,6 +46,15 @@ public class UserService {
         return user;
     }
 
+    @Transactional
+    public User updateUserName(Long userId, String userName){
+        User user = getUserById(userId);
+
+        user.updateUserName(userName);
+
+        return user;
+    }
+
     public User getUserById(Long userId){
         return userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
