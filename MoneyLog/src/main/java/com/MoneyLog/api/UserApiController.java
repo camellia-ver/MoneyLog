@@ -1,5 +1,6 @@
 package com.MoneyLog.api;
 
+import com.MoneyLog.dto.ChangePasswordRequestDto;
 import com.MoneyLog.dto.UserResponseDto;
 import com.MoneyLog.dto.SignUpRequestDto;
 import com.MoneyLog.dto.UpdateUserNameRequestDto;
@@ -34,5 +35,14 @@ public class UserApiController {
             ){
         User user = userService.updateUserName(userId, request.getUserName());
         return ResponseEntity.ok(UserResponseDto.from(user));
+    }
+
+    @PutMapping("/me/password")
+    public ResponseEntity<Void> changePassword(
+            @AuthenticationPrincipal Long userId,
+            @Valid @RequestBody ChangePasswordRequestDto request
+            ){
+        userService.changePassword(userId, request.getCurrentPassword(), request.getNewPassword());
+        return ResponseEntity.ok().build();
     }
 }

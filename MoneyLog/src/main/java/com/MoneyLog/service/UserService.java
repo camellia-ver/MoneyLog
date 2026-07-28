@@ -4,6 +4,7 @@ import com.MoneyLog.dto.SignUpRequestDto;
 import com.MoneyLog.enums.Role;
 import com.MoneyLog.exception.DuplicateEmailException;
 import com.MoneyLog.exception.InvalidCredentialsException;
+import com.MoneyLog.exception.InvalidPasswordException;
 import com.MoneyLog.exception.UserNotFoundException;
 import com.MoneyLog.model.User;
 import com.MoneyLog.repository.UserRepository;
@@ -58,5 +59,16 @@ public class UserService {
     public User getUserById(Long userId){
         return userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
+    }
+
+    @Transactional
+    public void changePassword(Long userId, String currentPassword, String newPassword){
+        User user = getUserById(userId);
+
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())){
+            throw new InvalidPasswordException();
+        }
+
+        user.changePassword(passwordEncoder.encode(newPassword));
     }
 }

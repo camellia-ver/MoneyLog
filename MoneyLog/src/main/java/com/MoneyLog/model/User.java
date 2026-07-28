@@ -49,4 +49,8 @@ public class User {
     public void updateUserName(String userName){
         this.userName = userName;
     }
+
+    public void changePassword(String encodedPassword){
+        this.password = encodedPassword;
+    }
 }
