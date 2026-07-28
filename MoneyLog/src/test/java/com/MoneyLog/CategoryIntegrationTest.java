@@ -141,4 +141,90 @@ public class CategoryIntegrationTest {
         LoginResponseDto loginResponse = objectMapper.readValue(responseBody, LoginResponseDto.class);
         return loginResponse.getToken();
     }
+
+    @Test
+    void 카테고리_수정이_성공한다() throws Exception {
+        CategoryRequestDto createRequest = new CategoryRequestDto();
+        createRequest.setName("식비");
+
+        MvcResult createResult = mockMvc.perform(post("/api/categories")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createRequest)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        Long categoryId = objectMapper
+                .readValue(createResult.getResponse().getContentAsString(), CategoryResponseDto.class)
+                .getId();
+
+        CategoryRequestDto updateRequest = new CategoryRequestDto();
+        updateRequest.setName("외식비");
+
+        mockMvc.perform(put("/api/categories/" + categoryId)
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("외식비"));
+    }
+
+    @Test
+    void 자기_자신과_같은_이름으로_수정하면_성공한다() throws Exception {
+        CategoryRequestDto createRequest = new CategoryRequestDto();
+        createRequest.setName("식비");
+
+        MvcResult createResult = mockMvc.perform(post("/api/categories")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createRequest)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        Long categoryId = objectMapper
+                .readValue(createResult.getResponse().getContentAsString(), CategoryResponseDto.class)
+                .getId();
+
+        CategoryRequestDto updateRequest = new CategoryRequestDto();
+        updateRequest.setName("식비"); // 그대로 같은 이름
+
+        mockMvc.perform(put("/api/categories/" + categoryId)
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isOk()); // 실패하면 안 됨!
+    }
+
+    @Test
+    void 다른_카테고리와_이름이_중복되면_수정이_실패한다() throws Exception {
+        CategoryRequestDto request1 = new CategoryRequestDto();
+        request1.setName("식비");
+        mockMvc.perform(post("/api/categories")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request1)))
+                .andExpect(status().isCreated());
+
+        CategoryRequestDto request2 = new CategoryRequestDto();
+        request2.setName("교통비");
+        MvcResult createResult2 = mockMvc.perform(post("/api/categories")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request2)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        Long category2Id = objectMapper
+                .readValue(createResult2.getResponse().getContentAsString(), CategoryResponseDto.class)
+                .getId();
+
+        CategoryRequestDto updateRequest = new CategoryRequestDto();
+        updateRequest.setName("식비"); // 이미 존재하는 이름으로 변경 시도
+
+        mockMvc.perform(put("/api/categories/" + category2Id)
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isConflict());
+    }
 }
