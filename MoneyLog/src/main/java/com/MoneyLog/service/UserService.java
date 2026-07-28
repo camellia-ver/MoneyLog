@@ -71,4 +71,15 @@ public class UserService {
 
         user.changePassword(passwordEncoder.encode(newPassword));
     }
+
+    @Transactional
+    public void deleteAccount(Long userId, String password){
+        User user = getUserById(userId);
+
+        if (!passwordEncoder.matches(password, user.getPassword())){
+            throw new InvalidPasswordException();
+        }
+
+        userRepository.delete(user);
+    }
 }
