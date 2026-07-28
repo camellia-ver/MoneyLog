@@ -1,9 +1,6 @@
 package com.MoneyLog.api;
 
-import com.MoneyLog.dto.ChangePasswordRequestDto;
-import com.MoneyLog.dto.UserResponseDto;
-import com.MoneyLog.dto.SignUpRequestDto;
-import com.MoneyLog.dto.UpdateUserNameRequestDto;
+import com.MoneyLog.dto.*;
 import com.MoneyLog.model.User;
 import com.MoneyLog.service.UserService;
 import jakarta.validation.Valid;
@@ -44,5 +41,14 @@ public class UserApiController {
             ){
         userService.changePassword(userId, request.getCurrentPassword(), request.getNewPassword());
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> deleteAccount(
+            @AuthenticationPrincipal Long userId,
+            @Valid @RequestBody DeleteAccountRequestDto request
+            ){
+        userService.deleteAccount(userId, request.getPassword());
+        return ResponseEntity.noContent().build();
     }
 }
