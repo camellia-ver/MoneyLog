@@ -172,4 +172,74 @@ public class ExpenseIntegrationTest {
                 .readValue(result.getResponse().getContentAsString(), CategoryResponseDto.class)
                 .getId();
     }
+
+    @Test
+    void 지출_수정이_성공한다() throws Exception {
+        ExpenseRequestDto createRequest = new ExpenseRequestDto();
+        createRequest.setCategoryId(categoryId);
+        createRequest.setAmount(new BigDecimal("15000"));
+        createRequest.setContent("점심 식사");
+        createRequest.setMemo("동료와 함께");
+
+        MvcResult createResult = mockMvc.perform(post("/api/expenses")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createRequest)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        Long expenseId = objectMapper
+                .readValue(createResult.getResponse().getContentAsString(), ExpenseResponseDto.class)
+                .getId();
+
+        ExpenseRequestDto updateRequest = new ExpenseRequestDto();
+        updateRequest.setCategoryId(categoryId); // 카테고리는 그대로 유지
+        updateRequest.setAmount(new BigDecimal("20000"));
+        updateRequest.setContent("저녁 식사");
+        updateRequest.setMemo("가족과 함께");
+
+        mockMvc.perform(put("/api/expenses/" + expenseId)
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").value("저녁 식사"))
+                .andExpect(jsonPath("$.amount").value(20000))
+                .andExpect(jsonPath("$.memo").value("가족과 함께"));
+    }
+
+    @Test
+    void 지출의_카테고리_변경이_성공한다() throws Exception {
+        Long transportCategoryId = createCategory("교통비"); // 헬퍼 재사용
+
+        ExpenseRequestDto createRequest = new ExpenseRequestDto();
+        createRequest.setCategoryId(categoryId); // "식비"로 생성 (setUp에서 만든 categoryId)
+        createRequest.setAmount(new BigDecimal("15000"));
+        createRequest.setContent("점심 식사");
+        createRequest.setMemo("동료와 함께");
+
+        MvcResult createResult = mockMvc.perform(post("/api/expenses")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createRequest)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        Long expenseId = objectMapper
+                .readValue(createResult.getResponse().getContentAsString(), ExpenseResponseDto.class)
+                .getId();
+
+        ExpenseRequestDto updateRequest = new ExpenseRequestDto();
+        updateRequest.setCategoryId(transportCategoryId); // 카테고리를 "교통비"로 변경
+        updateRequest.setAmount(new BigDecimal("15000"));
+        updateRequest.setContent("점심 식사");
+        updateRequest.setMemo("동료와 함께");
+
+        mockMvc.perform(put("/api/expenses/" + expenseId)
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.categoryName").value("교통비"));
+    }
 }
