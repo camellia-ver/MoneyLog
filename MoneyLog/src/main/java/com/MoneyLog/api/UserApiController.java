@@ -1,6 +1,6 @@
 package com.MoneyLog.api;
 
-import com.MoneyLog.dto.SignUpResponseDto;
+import com.MoneyLog.dto.UserResponseDto;
 import com.MoneyLog.dto.SignUpRequestDto;
 import com.MoneyLog.dto.UpdateUserNameRequestDto;
 import com.MoneyLog.model.User;
@@ -19,24 +19,20 @@ public class UserApiController {
     private final UserService userService;
 
     @PostMapping("signup")
-    public ResponseEntity<SignUpResponseDto> signUp(@Valid @RequestBody SignUpRequestDto request){
+    public ResponseEntity<UserResponseDto> signUp(@Valid @RequestBody SignUpRequestDto request){
         User user = userService.signUp(request);
 
-        SignUpResponseDto dto = new SignUpResponseDto(user.getId(), user.getEmail(), user.getUserName());
-
-        ResponseEntity<SignUpResponseDto> result = ResponseEntity.status(HttpStatus.CREATED)
-                .body(dto);
-
-
-        return result;
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(UserResponseDto.from(user));
     }
 
     @PutMapping("/me/username")
-    public ResponseEntity<SignUpResponseDto> updateUserName(
+    public ResponseEntity<UserResponseDto> updateUserName(
             @AuthenticationPrincipal Long userId,
             @Valid @RequestBody UpdateUserNameRequestDto request
             ){
         User user = userService.updateUserName(userId, request.getUserName());
-        return ResponseEntity.ok(new SignUpResponseDto(user.getId(), user.getEmail(), user.getUserName()));
+        return ResponseEntity.ok(UserResponseDto.from(user));
     }
 }
