@@ -7,11 +7,13 @@ import com.MoneyLog.model.Expense;
 import com.MoneyLog.service.ExpenseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -57,5 +59,20 @@ public class ExpenseApiController {
     ){
         Expense expense = expenseService.updateExpense(userId, expenseId, request);
         return ResponseEntity.ok(ExpenseResponseDto.from(expense));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ExpenseResponseDto>> getExpenses(
+            @AuthenticationPrincipal Long userId,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate endDate
+    ){
+        List<ExpenseResponseDto> response = expenseService.searchExpense(userId, categoryId, startDate, endDate)
+                .stream()
+                .map(ExpenseResponseDto::from)
+                .toList();
+
+        return ResponseEntity.ok(response);
     }
 }
