@@ -1,5 +1,6 @@
 package com.MoneyLog.service;
 
+import com.MoneyLog.dto.CategorySummaryDto;
 import com.MoneyLog.dto.ExpenseRequestDto;
 import com.MoneyLog.exception.ExpenseAccessDeniedException;
 import com.MoneyLog.exception.ExpenseNotFoundException;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -73,5 +75,22 @@ public class ExpenseService {
         LocalDateTime end = (endDate != null) ? endDate.atTime(23, 59, 59) : null;
 
         return expenseRepository.searchExpenses(user, categoryId ,start, end);
+    }
+
+    public List<CategorySummaryDto> getCategorySummary(Long userId, LocalDate startDate, LocalDate endDate){
+        User user = userService.getUserById(userId);
+        LocalDateTime start = startDate.atStartOfDay();
+        LocalDateTime end = endDate.atTime(23, 59, 59);
+
+        return expenseRepository.getCategorySummay(user,start,end);
+    }
+
+    public BigDecimal getTotalAmount(Long userId, LocalDate startDate, LocalDate endDate){
+        User user = userService.getUserById(userId);
+        LocalDateTime start = startDate.atStartOfDay();
+        LocalDateTime end = endDate.atTime(23, 59, 59);
+
+        BigDecimal total = expenseRepository.getTotalAmount(user, start, end);
+        return  total != null ? total : BigDecimal.ZERO;
     }
 }
