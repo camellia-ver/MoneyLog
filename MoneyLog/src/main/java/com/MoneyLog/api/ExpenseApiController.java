@@ -33,15 +33,6 @@ public class ExpenseApiController {
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
-    @GetMapping
-    public ResponseEntity<List<ExpenseResponseDto>> getExpenses(@AuthenticationPrincipal Long userId){
-        List<ExpenseResponseDto> result = expenseService.getExpenses(userId).stream()
-                .map(ExpenseResponseDto::from)
-                .toList();
-
-        return ResponseEntity.status(HttpStatus.OK).body(result);
-    }
-
     @DeleteMapping("/{expenseId}")
     public ResponseEntity<Void> deleteExpense(
             @AuthenticationPrincipal Long userId,

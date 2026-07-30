@@ -39,11 +39,6 @@ public class ExpenseService {
         return expenseRepository.save(expense);
     }
 
-    public List<Expense> getExpenses(Long userId){
-        User user = userService.getUserById(userId);
-        return expenseRepository.findByUser(user);
-    }
-
     @Transactional
     public void deleteExpense(Long userId, Long expenseId){
         Expense expense = getExpenseByIdAndUser(expenseId, userId);
