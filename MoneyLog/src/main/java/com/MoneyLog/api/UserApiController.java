@@ -1,6 +1,6 @@
 package com.MoneyLog.api;
 
-import com.MoneyLog.dto.*;
+import com.MoneyLog.dto.UserDto;
 import com.MoneyLog.model.User;
 import com.MoneyLog.service.UserService;
 import jakarta.validation.Valid;
@@ -17,27 +17,27 @@ public class UserApiController {
     private final UserService userService;
 
     @PostMapping("signup")
-    public ResponseEntity<UserResponseDto> signUp(@Valid @RequestBody SignUpRequestDto request){
+    public ResponseEntity<UserDto.Response> signUp(@Valid @RequestBody UserDto.SignUpRequest request){
         User user = userService.signUp(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(UserResponseDto.from(user));
+                .body(UserDto.Response.from(user));
     }
 
     @PutMapping("/me/username")
-    public ResponseEntity<UserResponseDto> updateUserName(
+    public ResponseEntity<UserDto.Response> updateUserName(
             @AuthenticationPrincipal Long userId,
-            @Valid @RequestBody UpdateUserNameRequestDto request
+            @Valid @RequestBody UserDto.UpdateUserNameRequest request
             ){
         User user = userService.updateUserName(userId, request.getUserName());
-        return ResponseEntity.ok(UserResponseDto.from(user));
+        return ResponseEntity.ok(UserDto.Response.from(user));
     }
 
     @PutMapping("/me/password")
     public ResponseEntity<Void> changePassword(
             @AuthenticationPrincipal Long userId,
-            @Valid @RequestBody ChangePasswordRequestDto request
+            @Valid @RequestBody UserDto.ChangePasswordRequest request
             ){
         userService.changePassword(userId, request.getCurrentPassword(), request.getNewPassword());
         return ResponseEntity.ok().build();
@@ -46,7 +46,7 @@ public class UserApiController {
     @DeleteMapping("/me")
     public ResponseEntity<Void> deleteAccount(
             @AuthenticationPrincipal Long userId,
-            @Valid @RequestBody DeleteAccountRequestDto request
+            @Valid @RequestBody UserDto.DeleteAccountRequest request
             ){
         userService.deleteAccount(userId, request.getPassword());
         return ResponseEntity.noContent().build();

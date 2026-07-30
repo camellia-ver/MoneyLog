@@ -1,7 +1,7 @@
 package com.MoneyLog.service;
 
 import com.MoneyLog.dto.CategorySummaryDto;
-import com.MoneyLog.dto.ExpenseRequestDto;
+import com.MoneyLog.dto.ExpenseDto;
 import com.MoneyLog.exception.ExpenseAccessDeniedException;
 import com.MoneyLog.exception.ExpenseNotFoundException;
 import com.MoneyLog.model.Category;
@@ -26,7 +26,7 @@ public class ExpenseService {
     private final ExpenseRepository expenseRepository;
 
     @Transactional
-    public Expense createExpense(Long userId, ExpenseRequestDto request){
+    public Expense createExpense(Long userId, ExpenseDto.Request request){
         User user = userService.getUserById(userId);
         Category category = categoryService.getCategoryByIdAndUser(request.getCategoryId(), userId);
 
@@ -48,7 +48,7 @@ public class ExpenseService {
     }
 
     @Transactional
-    public Expense updateExpense(Long userId, Long expenseId, ExpenseRequestDto request){
+    public Expense updateExpense(Long userId, Long expenseId, ExpenseDto.Request request){
         Expense expense = getExpenseByIdAndUser(expenseId, userId);
         Category category = categoryService.getCategoryByIdAndUser(request.getCategoryId(), userId);
 

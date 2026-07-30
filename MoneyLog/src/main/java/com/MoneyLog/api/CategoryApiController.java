@@ -1,7 +1,6 @@
 package com.MoneyLog.api;
 
-import com.MoneyLog.dto.CategoryRequestDto;
-import com.MoneyLog.dto.CategoryResponseDto;
+import com.MoneyLog.dto.CategoryDto;
 import com.MoneyLog.model.Category;
 import com.MoneyLog.service.CategoryService;
 import jakarta.validation.Valid;
@@ -20,22 +19,22 @@ public class CategoryApiController {
     private final CategoryService categoryService;
 
     @PostMapping
-    public ResponseEntity<CategoryResponseDto> createCategory(
+    public ResponseEntity<CategoryDto.Response> createCategory(
             @AuthenticationPrincipal Long userId,
-            @Valid @RequestBody CategoryRequestDto request
+            @Valid @RequestBody CategoryDto.Request request
             ){
         Category category = categoryService.createCategory(userId, request.getName());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(CategoryResponseDto.from(category));
+                .body(CategoryDto.Response.from(category));
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryResponseDto>> getCategories(
+    public ResponseEntity<List<CategoryDto.Response>> getCategories(
             @AuthenticationPrincipal Long userId
     ){
-        List<CategoryResponseDto> response = categoryService.getCategories(userId).stream()
-                .map(CategoryResponseDto::from)
+        List<CategoryDto.Response> response = categoryService.getCategories(userId).stream()
+                .map(CategoryDto.Response::from)
                 .toList();
 
         return ResponseEntity
@@ -53,12 +52,12 @@ public class CategoryApiController {
     }
 
     @PutMapping("/{categoryId}")
-    public  ResponseEntity<CategoryResponseDto> updateCategory(
+    public  ResponseEntity<CategoryDto.Response> updateCategory(
             @AuthenticationPrincipal Long userId,
             @PathVariable Long categoryId,
-            @Valid @RequestBody CategoryRequestDto request
+            @Valid @RequestBody CategoryDto.Request request
     ){
         Category category = categoryService.updateCategory(userId, categoryId, request.getName());
-        return ResponseEntity.ok(CategoryResponseDto.from(category));
+        return ResponseEntity.ok(CategoryDto.Response.from(category));
     }
 }

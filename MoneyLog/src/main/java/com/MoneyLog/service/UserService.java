@@ -1,6 +1,6 @@
 package com.MoneyLog.service;
 
-import com.MoneyLog.dto.SignUpRequestDto;
+import com.MoneyLog.dto.UserDto;
 import com.MoneyLog.enums.Role;
 import com.MoneyLog.exception.DuplicateEmailException;
 import com.MoneyLog.exception.InvalidCredentialsException;
@@ -21,7 +21,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public User signUp(SignUpRequestDto inputData){
+    public User signUp(UserDto.SignUpRequest inputData){
         if (userRepository.existsByEmail(inputData.getEmail())){
             throw new DuplicateEmailException("이미 사용 중인 이메일입니다: " + inputData.getEmail());
         }

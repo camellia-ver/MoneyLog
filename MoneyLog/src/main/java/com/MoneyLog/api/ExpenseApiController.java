@@ -1,6 +1,8 @@
 package com.MoneyLog.api;
 
-import com.MoneyLog.dto.*;
+import com.MoneyLog.dto.CategorySummaryDto;
+import com.MoneyLog.dto.ExpenseDto;
+import com.MoneyLog.dto.ExpenseSummaryResponseDto;
 import com.MoneyLog.model.Expense;
 import com.MoneyLog.service.ExpenseService;
 import jakarta.validation.Valid;
@@ -22,12 +24,12 @@ public class ExpenseApiController {
     private final ExpenseService expenseService;
 
     @PostMapping
-    public ResponseEntity<ExpenseResponseDto> createExpense(
+    public ResponseEntity<ExpenseDto.Response> createExpense(
             @AuthenticationPrincipal Long userId,
-            @Valid @RequestBody ExpenseRequestDto request
+            @Valid @RequestBody ExpenseDto.Request request
             ){
         Expense expense = expenseService.createExpense(userId, request);
-        ExpenseResponseDto result = ExpenseResponseDto.from(expense);
+        ExpenseDto.Response result = ExpenseDto.Response.from(expense);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
@@ -42,25 +44,25 @@ public class ExpenseApiController {
     }
 
     @PutMapping("/{expenseId}")
-    public ResponseEntity<ExpenseResponseDto> updateExpense(
+    public ResponseEntity<ExpenseDto.Response> updateExpense(
             @AuthenticationPrincipal Long userId,
             @PathVariable Long expenseId,
-            @Valid @RequestBody ExpenseRequestDto request
+            @Valid @RequestBody ExpenseDto.Request request
     ){
         Expense expense = expenseService.updateExpense(userId, expenseId, request);
-        return ResponseEntity.ok(ExpenseResponseDto.from(expense));
+        return ResponseEntity.ok(ExpenseDto.Response.from(expense));
     }
 
     @GetMapping
-    public ResponseEntity<List<ExpenseResponseDto>> getExpenses(
+    public ResponseEntity<List<ExpenseDto.Response>> getExpenses(
             @AuthenticationPrincipal Long userId,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate endDate
     ){
-        List<ExpenseResponseDto> response = expenseService.searchExpense(userId, categoryId, startDate, endDate)
+        List<ExpenseDto.Response> response = expenseService.searchExpense(userId, categoryId, startDate, endDate)
                 .stream()
-                .map(ExpenseResponseDto::from)
+                .map(ExpenseDto.Response::from)
                 .toList();
 
         return ResponseEntity.ok(response);
