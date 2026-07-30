@@ -1,8 +1,6 @@
 package com.MoneyLog.api;
 
-import com.MoneyLog.dto.CategoryResponseDto;
-import com.MoneyLog.dto.ExpenseRequestDto;
-import com.MoneyLog.dto.ExpenseResponseDto;
+import com.MoneyLog.dto.*;
 import com.MoneyLog.model.Expense;
 import com.MoneyLog.service.ExpenseService;
 import jakarta.validation.Valid;
@@ -13,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -65,5 +64,19 @@ public class ExpenseApiController {
                 .toList();
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<ExpenseSummaryResponseDto> getSummary(
+            @AuthenticationPrincipal Long userId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ){
+        BigDecimal totalAmount = expenseService.getTotalAmount(userId, startDate, endDate);
+        List<CategorySummaryDto> categorySummaries = expenseService.getCategorySummary(userId, startDate, endDate);
+
+        ExpenseSummaryResponseDto response = new ExpenseSummaryResponseDto(totalAmount, categorySummaries);
+
+        return  ResponseEntity.ok(response);
     }
 }
