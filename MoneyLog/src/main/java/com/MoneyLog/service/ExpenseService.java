@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -67,5 +69,14 @@ public class ExpenseService {
         }
 
         return expense;
+    }
+
+    public List<Expense> searchExpense(Long userId, Long categoryId, LocalDate startDate, LocalDate endDate){
+        User user = userService.getUserById(userId);
+
+        LocalDateTime start = (startDate != null) ? startDate.atStartOfDay() : null;
+        LocalDateTime end = (endDate != null) ? endDate.atTime(23, 59, 59) : null;
+
+        return expenseRepository.searchExpenses(user, categoryId ,start, end);
     }
 }
