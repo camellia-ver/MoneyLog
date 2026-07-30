@@ -30,16 +30,16 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     @Query("SELECT new com.MoneyLog.dto.CategorySummaryDto(e.category.name, SUM(e.amount)) " +
         "FROM Expense e " +
-        "WHERE e.user = :user AND e.createdAt BETWEEN :start AND end " +
+        "WHERE e.user = :user AND e.createdAt BETWEEN :start AND :end " +
         "GROUP BY e.category.name")
-    List<CategorySummaryDto> getCategorySummay(
+    List<CategorySummaryDto> getCategorySummary(
             @Param("user") User user,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
 
     @Query("SELECT SUM(e.amount) FROM Expense e " +
-            "WHERE e.user = :user AND e.createAt BETWEEN :start AND end")
+            "WHERE e.user = :user AND e.createdAt BETWEEN :start AND :end")
     BigDecimal getTotalAmount(
             @Param("user") User user,
             @Param("start") LocalDateTime start,

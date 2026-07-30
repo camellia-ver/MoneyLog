@@ -82,7 +82,7 @@ public class ExpenseService {
         LocalDateTime start = startDate.atStartOfDay();
         LocalDateTime end = endDate.atTime(23, 59, 59);
 
-        return expenseRepository.getCategorySummay(user,start,end);
+        return expenseRepository.getCategorySummary(user,start,end);
     }
 
     public BigDecimal getTotalAmount(Long userId, LocalDate startDate, LocalDate endDate){
