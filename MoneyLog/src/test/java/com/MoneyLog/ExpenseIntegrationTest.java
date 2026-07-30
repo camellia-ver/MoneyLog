@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -276,5 +277,43 @@ public class ExpenseIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].content").value("점심"));
+    }
+
+    private Long createExpense(Long categoryId, String content, BigDecimal amount) throws Exception {
+        ExpenseRequestDto request = new ExpenseRequestDto();
+        request.setCategoryId(categoryId);
+        request.setAmount(amount);
+        request.setContent(content);
+        request.setMemo("테스트 메모");
+
+        MvcResult result = mockMvc.perform(post("/api/expenses")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        return objectMapper
+                .readValue(result.getResponse().getContentAsString(), ExpenseResponseDto.class)
+                .getId();
+    }
+
+    @Test
+    void 지출_요약_조회가_성공한다() throws Exception {
+        Long transportCategoryId = createCategory("교통비");
+
+        createExpense(categoryId, "점심", new BigDecimal("15000"));       // "식비"
+        createExpense(categoryId, "저녁", new BigDecimal("5000"));        // "식비"
+        createExpense(transportCategoryId, "버스비", new BigDecimal("3000")); // "교통비"
+
+        LocalDate today = LocalDate.now();
+
+        mockMvc.perform(get("/api/expenses/summary")
+                        .header("Authorization", "Bearer " + token)
+                        .param("startDate", today.minusDays(1).toString())
+                        .param("endDate", today.plusDays(1).toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalAmount").value(23000))
+                .andExpect(jsonPath("$.categorySummaryList.length()").value(2));
     }
 }
