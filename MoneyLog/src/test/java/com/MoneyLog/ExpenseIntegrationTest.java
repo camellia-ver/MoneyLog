@@ -242,4 +242,39 @@ public class ExpenseIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.categoryName").value("교통비"));
     }
+
+    private Long createExpense(Long categoryId, String content) throws Exception {
+        ExpenseRequestDto request = new ExpenseRequestDto();
+        request.setCategoryId(categoryId);
+        request.setAmount(new BigDecimal("10000")); // 테스트에 중요하지 않으니 고정값
+        request.setContent(content);
+        request.setMemo("테스트 메모");
+
+        MvcResult result = mockMvc.perform(post("/api/expenses")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        return objectMapper
+                .readValue(result.getResponse().getContentAsString(), ExpenseResponseDto.class)
+                .getId();
+    }
+
+    @Test
+    void category_필터가_정상_동작한다() throws Exception {
+        Long foodCategoryId = categoryId; // setUp에서 만든 "식비" 재사용
+        Long transportCategoryId = createCategory("교통비");
+
+        createExpense(foodCategoryId, "점심"); // 헬퍼로 만들어두면 편함
+        createExpense(transportCategoryId, "버스비");
+
+        mockMvc.perform(get("/api/expenses")
+                        .header("Authorization", "Bearer " + token)
+                        .param("categoryId", String.valueOf(foodCategoryId)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].content").value("점심"));
+    }
 }
