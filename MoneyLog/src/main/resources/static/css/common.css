@@ -1,4 +1,55 @@
 /* ============================
+   Base / Global
+   ============================ */
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+}
+
+a {
+  color: var(--color-primary-700);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-primary-600);
+  text-decoration: underline;
+}
+
+.form-label {
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+/* ============================
+   Auth Page (Login / Signup)
+   ============================ */
+.auth-title {
+  font-family: var(--font-heading);
+  font-size: var(--text-h1);
+  font-weight: 600;
+  color: var(--color-primary-700);
+  text-align: center;
+  margin-bottom: var(--space-5);
+}
+
+.auth-helper-text {
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+  color: var(--color-text-secondary);
+}
+
+.auth-error-message {
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+  color: var(--color-expense);
+}
+
+/* ============================
    Primary Button
    ============================ */
 .btn-primary-custom {
@@ -12,11 +63,28 @@
   font-size: var(--text-body);
   font-weight: 600;
   cursor: pointer;
-  transition: transform var(--motion-fast);
+  transition: background-color var(--motion-fast), color var(--motion-fast), box-shadow var(--motion-fast), transform var(--motion-fast);
+}
+
+.btn-primary-custom:hover {
+  background-color: var(--color-primary-600);
+  color: var(--color-primary-50);
+}
+
+.btn-primary-custom:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-200);
 }
 
 .btn-primary-custom:active {
   transform: scale(0.96);
+}
+
+.btn-primary-custom:disabled {
+  background-color: var(--color-text-disabled);
+  color: var(--color-surface);
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* ============================
@@ -33,11 +101,27 @@
   font-size: var(--text-body);
   font-weight: 600;
   cursor: pointer;
-  transition: transform var(--motion-fast);
+  transition: background-color var(--motion-fast), box-shadow var(--motion-fast), transform var(--motion-fast);
+}
+
+.btn-secondary-custom:hover {
+  background-color: var(--color-primary-200);
+}
+
+.btn-secondary-custom:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-200);
 }
 
 .btn-secondary-custom:active {
   transform: scale(0.96);
+}
+
+.btn-secondary-custom:disabled {
+  background-color: var(--color-divider);
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* ============================
@@ -58,7 +142,11 @@
   justify-content: center;
   box-shadow: var(--shadow-md);
   cursor: pointer;
-  transition: transform var(--motion-fast);
+  transition: box-shadow var(--motion-fast), transform var(--motion-fast);
+}
+
+.fab-custom:hover {
+  box-shadow: var(--shadow-lg);
 }
 
 .fab-custom:active {
@@ -80,6 +168,20 @@
   font-family: var(--font-body);
   font-size: var(--text-body);
   color: var(--color-text-primary);
+  transition: border-color var(--motion-fast), box-shadow var(--motion-fast);
+}
+
+.input-custom:focus,
+.input-custom:focus-within {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+
+.input-custom:disabled {
+  background-color: var(--color-divider);
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
 }
 
 .input-custom input {
@@ -110,7 +212,7 @@
 .card-custom {
   border-radius: var(--radius-lg);
   padding: var(--space-4);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
   background-color: var(--color-surface);
 }
 
