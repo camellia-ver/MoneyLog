@@ -1,26 +1,79 @@
 :root {
-  --color-primary: #FF8FB8;
-  --color-primary-light: #FFE7F0;
-  --color-secondary: #72D6C9;
+  /* ===== Primary (Money Pink) ===== */
+  --color-primary-50: #FFF5F9;
+  --color-primary-100: #FFE7F0;
+  --color-primary-200: #FFD6E7;
+  --color-primary-300: #FFC2DB;
+  --color-primary-400: #FFA8CA;
+  --color-primary-500: #FF8FB8;
+  --color-primary-600: #F56FA2;
+  --color-primary-700: #E85490;
+  --color-primary: var(--color-primary-500);
+  --color-primary-light: var(--color-primary-100);
 
+  /* ===== Secondary (Mint) ===== */
+  --color-secondary-100: #ECFCF8;
+  --color-secondary-200: #D7F7F1;
+  --color-secondary-300: #B8EFE6;
+  --color-secondary-400: #90E4D8;
+  --color-secondary-500: #72D6C9;
+  --color-secondary-600: #56C5B8;
+  --color-secondary: var(--color-secondary-500);
+
+  /* ===== Neutral ===== */
   --color-background: #FFF8FC;
   --color-surface: #FFFFFF;
   --color-border: #F0E6EF;
+  --color-divider: #F7F2F6;
 
+  /* ===== Text ===== */
   --color-text-primary: #4A4453;
   --color-text-secondary: #7A7482;
+  --color-text-placeholder: #AAA5B3;
+  --color-text-disabled: #D7D1DD;
 
+  /* ===== Semantic ===== */
   --color-expense: #FF7B7B;
   --color-income: #72D6C9;
   --color-success: #A6E3A1;
   --color-warning: #FFD166;
+  --color-info: #7CC8FF;
 
+  /* ===== Radius ===== */
   --radius-sm: 12px;
   --radius-md: 16px;
   --radius-lg: 24px;
   --radius-full: 999px;
 
+  /* ===== Shadow ===== */
   --shadow-sm: 0 2px 8px rgba(0,0,0,.05);
   --shadow-md: 0 8px 24px rgba(0,0,0,.08);
   --shadow-lg: 0 12px 32px rgba(0,0,0,.12);
+
+  /* ===== Typography - Font Family ===== */
+  --font-heading: 'Fredoka', sans-serif;
+  --font-body: 'Pretendard', sans-serif;
+  --font-number: 'Inter', sans-serif;
+
+  /* ===== Typography - Scale ===== */
+  --text-display: 40px;
+  --text-h1: 32px;
+  --text-h2: 28px;
+  --text-h3: 24px;
+  --text-h4: 20px;
+  --text-body: 16px;
+  --text-small: 14px;
+  --text-caption: 12px;
+
+  /* ===== Spacing (8pt Grid) ===== */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: 40px;
+  --space-7: 48px;
+
+  /* ===== Motion ===== */
+  --motion-fast: 150ms;
 }
