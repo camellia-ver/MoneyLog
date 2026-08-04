@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoneyLog</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/common.css">
+
+    <style>
+        /* ============================
+           버튼 세로 정렬 보정
+           (기존 컴포넌트 규칙은 유지, 정렬만 보정)
+           ============================ */
+        .btn-primary-custom,
+        .btn-secondary-custom {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        /* ============================
+           Navbar
+           ============================ */
+        .site-navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-3) var(--space-4);
+            background-color: var(--color-surface);
+            border-bottom: 1px solid var(--color-border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .site-navbar .brand {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: var(--text-h3);
+            color: var(--color-primary-700);
+        }
+
+        .site-navbar .nav-actions {
+            display: flex;
+            gap: var(--space-2);
+        }
+
+        /* 네브바 안에서는 버튼 높이를 살짝 줄여 균형 맞춤 */
+        .site-navbar .btn-primary-custom,
+        .site-navbar .btn-secondary-custom {
+            height: 40px;
+            padding: 0 var(--space-3);
+            font-size: var(--text-small);
+        }
+
+        /* ============================
+           Hero
+           ============================ */
+        .hero-section {
+            background-color: var(--color-background);
+            padding: var(--space-7) var(--space-4);
+        }
+
+        .hero-title {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: var(--text-display);
+            color: var(--color-text-primary);
+            text-align: inherit;
+            margin-bottom: var(--space-3);
+        }
+
+        .hero-subtitle {
+            font-size: var(--text-h4);
+            font-weight: 400;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-5);
+            text-wrap: balance;
+        }
+
+        .hero-cta {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: var(--space-3);
+        }
+
+        .hero-visual {
+            margin-top: var(--space-7);
+        }
+
+        .hero-visual img {
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+        }
+
+        @media (min-width: 768px) {
+            .hero-cta {
+                justify-content: flex-start;
+            }
+
+            .hero-visual {
+                margin-top: 0;
+                padding-left: var(--space-6);
+            }
+        }
+
+        /* ============================
+           Feature Section
+           ============================ */
+        .feature-section {
+            padding: var(--space-7) var(--space-4);
+            background-color: var(--color-surface);
+        }
+
+        .section-heading {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: var(--text-h2);
+            color: var(--color-text-primary);
+            text-align: center;
+            margin-bottom: var(--space-2);
+        }
+
+        .section-subheading {
+            font-size: var(--text-body);
+            color: var(--color-text-secondary);
+            text-align: center;
+            margin-bottom: var(--space-6);
+        }
+
+        .feature-card {
+            height: 100%;
+            text-align: center;
+            transition: transform var(--motion-fast);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-full);
+            background-color: var(--color-primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--text-h3);
+            margin: 0 auto var(--space-3);
+        }
+
+        .feature-title {
+            font-family: var(--font-body);
+            font-weight: 600;
+            font-size: var(--text-h4);
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-2);
+        }
+
+        .feature-desc {
+            font-size: var(--text-small);
+            color: var(--color-text-secondary);
+            margin-bottom: 0;
+        }
+
+        /* ============================
+           CTA Band
+           ============================ */
+        .cta-band {
+            background-color: var(--color-primary-50);
+            padding: var(--space-6) var(--space-4);
+            text-align: center;
+        }
+
+        .cta-band h3 {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: var(--text-h3);
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-4);
+        }
+
+        /* ============================
+           Footer
+           ============================ */
+        .site-footer {
+            padding: var(--space-5) var(--space-4);
+            background-color: var(--color-surface);
+            border-top: 1px solid var(--color-border);
+            text-align: center;
+        }
+
+        .site-footer p {
+            font-size: var(--text-caption);
+            color: var(--color-text-placeholder);
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="site-navbar">
+        <span class="brand">MoneyLog</span>
+        <div class="nav-actions">
+            <a href="login.html" class="btn btn-secondary-custom">로그인</a>
+            <a href="signup.html" class="btn btn-primary-custom">회원가입</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-md-start text-center">
+                    <h1 class="hero-title">MoneyLog</h1>
+                    <p class="hero-subtitle">
+                        Record Every Spending, Grow Every Saving.
+                    </p>
+                    <div class="hero-cta">
+                        <a href="signup.html" class="btn btn-primary-custom">무료로 시작하기</a>
+                        <a href="login.html" class="btn btn-secondary-custom">로그인</a>
+                    </div>
+                </div>
+                <div class="col-md-6 text-center hero-visual">
+                    <img src="images/hero.png" alt="MoneyLog 소개 이미지" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Section -->
+    <section class="feature-section">
+        <div class="container">
+            <h2 class="section-heading">이렇게 써보세요</h2>
+            <p class="section-subheading">복잡한 가계부는 그만, MoneyLog는 이렇게 다릅니다</p>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card-custom feature-card">
+                        <div class="feature-icon">☕</div>
+                        <h3 class="feature-title">빠른 기록</h3>
+                        <p class="feature-desc">몇 번의 터치로 오늘의 지출을 바로 기록하세요.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card-custom feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3 class="feature-title">한눈에 보는 통계</h3>
+                        <p class="feature-desc">복잡한 숫자 대신 누구나 이해할 수 있는 그래프로 보여드려요.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card-custom feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3 class="feature-title">카테고리별 분석</h3>
+                        <p class="feature-desc">식비, 교통, 쇼핑 등 카테고리별로 소비 패턴을 확인하세요.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Band -->
+    <section class="cta-band">
+        <h3>오늘부터 소비를 기록해보세요</h3>
+        <a href="signup.html" class="btn btn-primary-custom">무료로 시작하기</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>&copy; 2026 MoneyLog. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
