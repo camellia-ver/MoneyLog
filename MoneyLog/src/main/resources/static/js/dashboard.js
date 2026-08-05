@@ -1,3 +1,6 @@
+let currentExpense = [];
+let currentCategories = [];
+
 async function initDashboard() {
     if (!isLoggedIn()) {
         window.location.href = "login.html";
@@ -18,6 +21,8 @@ async function loadDashboardData() {
             apiRequest("/api/expenses"),
             apiRequest("/api/categories"),
         ]);
+        currentExpenses = expenses; 
+        currentCategories = categories;
 
         // 이번 달 총 소비
         document.getElementById("totalAmount").textContent =
@@ -63,6 +68,9 @@ async function loadDashboardData() {
                     <div class="collapse mt-2 ps-2" id="detail-${expense.id}">
                         <p class="text-secondary mb-1">메모: ${expense.memo || "없음"}</p>
                         <p class="text-secondary mb-2">등록일: ${createdDate}</p>
+                        <button class="btn btn-sm btn-outline-secondary me-2" data-expense-id="${expense.id}" data-action="edit">
+                            수정
+                        </button>
                         <button class="btn btn-sm btn-outline-danger" data-expense-id="${expense.id}" data-action="delete">
                             삭제
                         </button>
@@ -136,17 +144,30 @@ document.getElementById("expenseForm").addEventListener("submit", async function
     const content = document.getElementById("expenseContent").value;
     const memo = document.getElementById("expenseMemo").value;
 
+    const editingId = event.target.dataset.editingId;
+
     try {
-        await apiRequest("/api/expenses", {
-            method: "POST",
-            body: JSON.stringify({ categoryId, amount, content, memo }),
-        });
+        if (editingId) {
+            await apiRequest(`/api/expenses/${editingId}`, {
+                method: "PUT",
+                body: JSON.stringify({ categoryId, amount, content, memo }),
+            });
+        } else {
+            await apiRequest("/api/expenses", {
+                method: "POST",
+                body: JSON.stringify({ categoryId, amount, content, memo }),
+            });
+        }
 
         const modalElement = document.getElementById("expenseModal");
         const modal = bootstrap.Modal.getInstance(modalElement);
         modal.hide();
 
         event.target.reset();
+        delete event.target.dataset.editingId;
+        document.querySelector("#expenseModal .modal-title").textContent = "지출 추가"; 
+        document.querySelector("#expenseForm button[type=submit]").textContent = "추가하기"; 
+        
         await loadDashboardData();
     } catch (error) {
         const errorMessage = document.getElementById("expenseErrorMessage");
@@ -156,21 +177,56 @@ document.getElementById("expenseForm").addEventListener("submit", async function
 });
 
 document.getElementById("expenseList").addEventListener("click", async function (event) {
-    if (event.target.dataset.action !== "delete") {
-        return; // 삭제 버튼이 아니면 무시
+    const action = event.target.dataset.action;
+    
+    if (action === "delete") {
+        const expenseId = event.target.dataset.expenseId;
+
+        if (!confirm("정말 삭제하시겠습니까?")) {
+            return;
+        }
+
+        try {
+            await apiRequest(`/api/expenses/${expenseId}`, { method: "DELETE" });
+            await loadDashboardData();
+        } catch (error) {
+            alert("삭제 중 오류가 발생했습니다: " + error.message);
+        }
+        return; 
     }
 
-    const expenseId = event.target.dataset.expenseId;
+    if (action === "edit") {
+        const expenseId = event.target.dataset.expenseId;
+        const expense = currentExpenses.find(e => e.id === Number(expenseId));
 
-    if (!confirm("정말 삭제하시겠습니까?")) {
+        // 1. 카테고리 select 채우기 (기존 categories 배열 재사용)
+        const select = document.getElementById("expenseCategoryId");
+        select.innerHTML = "";
+        currentCategories.forEach((category) => {
+            const option = document.createElement("option");
+            option.value = category.id;
+            option.textContent = category.name;
+            select.appendChild(option);
+        });
+
+        // 2. 필드 채우기
+        const matchedCategory = currentCategories.find(c => c.name === expense.categoryName);
+        select.value = matchedCategory.id;
+        document.getElementById("expenseAmount").value = expense.amount;
+        document.getElementById("expenseContent").value = expense.content;
+        document.getElementById("expenseMemo").value = expense.memo || "";
+
+        // 3. 수정 중인 id 기록
+        document.getElementById("expenseForm").dataset.editingId = expense.id;
+
+        // 4. 텍스트 변경
+        document.querySelector("#expenseModal .modal-title").textContent = "지출 수정";
+        document.querySelector("#expenseForm button[type=submit]").textContent = "수정하기";
+
+        // 5. 모달 열기
+        const modal = new bootstrap.Modal(document.getElementById("expenseModal"));
+        modal.show();
         return;
-    }
-
-    try {
-        await apiRequest(`/api/expenses/${expenseId}`, { method: "DELETE" });
-        await loadDashboardData();
-    } catch (error) {
-        alert("삭제 중 오류가 발생했습니다: " + error.message);
     }
 });
 
