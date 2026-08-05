@@ -13,42 +13,48 @@ async function loadDashboardData() {
     const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split("T")[0];
 
     try {
-        const [summary, expenses] = await Promise.all([
+        const [summary, expenses, categories] = await Promise.all([
             apiRequest(`/api/expenses/summary?startDate=${startDate}&endDate=${endDate}`),
             apiRequest("/api/expenses"),
+            apiRequest("/api/categories"),
         ]);
 
+        // 이번 달 총 소비
         document.getElementById("totalAmount").textContent =
             `₩${summary.totalAmount.toLocaleString()}`;
 
+        // 카테고리별 지출
         const categoryList = document.getElementById("categoryList");
         categoryList.innerHTML = "";
         if (summary.categorySummaryList.length === 0) {
             categoryList.innerHTML = `<li class="text-secondary">이번 달 지출 카테고리가 없습니다.</li>`;
         } else {
-            summary.categorySummaryList.forEach((category) => {
+            summary.categorySummaryList.forEach((categorySummary) => {
                 const li = document.createElement("li");
                 li.className = "d-flex justify-content-between mb-2";
                 li.innerHTML = `
-                    <span>${category.categoryName}</span>
-                    <span>₩${category.totalAmount.toLocaleString()}</span>
+                    <span>${categorySummary.categoryName}</span>
+                    <span>
+                        ₩${categorySummary.totalAmount.toLocaleString()}
+                    </span>
                 `;
                 categoryList.appendChild(li);
             });
         }
 
+        // 최근 지출 목록
         const expenseList = document.getElementById("expenseList");
         expenseList.innerHTML = "";
         if (expenses.length === 0) {
             expenseList.innerHTML = `<li class="text-secondary">등록된 지출이 없습니다.</li>`;
         } else {
             expenses.forEach((expense) => {
-            const li = document.createElement("li");
-            li.className = "mb-2";
+                const li = document.createElement("li");
+                li.className = "mb-2";
 
-            const createdDate = new Date(expense.createdAt).toLocaleDateString();
+                const createdDate = new Date(expense.createdAt).toLocaleDateString();
 
-li.innerHTML = `
+                li.innerHTML = `
                     <div class="d-flex justify-content-between" style="cursor: pointer;"
                          data-bs-toggle="collapse" data-bs-target="#detail-${expense.id}">
                         <span>${expense.content} <small class="text-secondary">(${expense.categoryName})</small></span>
@@ -62,9 +68,21 @@ li.innerHTML = `
                         </button>
                     </div>
                 `;
-            expenseList.appendChild(li);
-        });
+                expenseList.appendChild(li);
+            });
         }
+
+        const categoryManageList = document.getElementById("categoryManageList");
+        categoryManageList.innerHTML = "";
+        categories.forEach((category) => {
+            const li = document.createElement("li");
+            li.className = "d-flex justify-content-between mb-2";
+            li.innerHTML = `
+                <span>${category.name}</span>
+                <button class="btn btn-sm btn-outline-danger" data-category-id="${category.id}" data-action="delete">삭제</button>
+            `;
+            categoryManageList.appendChild(li);
+        });
     } catch (error) {
         alert("데이터를 불러오는 중 오류가 발생했습니다: " + error.message);
     }
@@ -150,6 +168,44 @@ document.getElementById("expenseList").addEventListener("click", async function 
 
     try {
         await apiRequest(`/api/expenses/${expenseId}`, { method: "DELETE" });
+        await loadDashboardData();
+    } catch (error) {
+        alert("삭제 중 오류가 발생했습니다: " + error.message);
+    }
+});
+
+document.getElementById("categoryList").addEventListener("click", async function (event) {
+    if (event.target.dataset.action !== "delete") {
+        return;
+    }
+
+    const categoryId = event.target.dataset.categoryId;
+
+    if (!confirm("정말 삭제하시겠습니까?")) {
+        return;
+    }
+
+    try {
+        await apiRequest(`/api/categories/${categoryId}`, { method: "DELETE" });
+        await loadDashboardData();
+    } catch (error) {
+        alert("삭제 중 오류가 발생했습니다: " + error.message);
+    }
+});
+
+document.getElementById("categoryManageList").addEventListener("click", async function (event) {
+    if (event.target.dataset.action !== "delete") {
+        return;
+    }
+
+    const categoryId = event.target.dataset.categoryId;
+
+    if (!confirm("정말 삭제하시겠습니까?")) {
+        return;
+    }
+
+    try {
+        await apiRequest(`/api/categories/${categoryId}`, { method: "DELETE" });
         await loadDashboardData();
     } catch (error) {
         alert("삭제 중 오류가 발생했습니다: " + error.message);
