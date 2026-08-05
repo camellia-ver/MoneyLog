@@ -70,6 +70,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
+    @ExceptionHandler(CategoryHasExpensesException.class)
+    public ResponseEntity<ErrorResponseDto> handleCategoryHasExpenses(CategoryHasExpensesException e){
+        return buildErrorResponse(HttpStatus.CONFLICT, e.getMessage());
+    }
+
     private ResponseEntity<ErrorResponseDto> buildErrorResponse(HttpStatus status, String message){
         ErrorResponseDto error = new ErrorResponseDto(
                 status.value(),

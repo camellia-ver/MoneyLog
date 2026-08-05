@@ -1,6 +1,7 @@
 package com.MoneyLog.repository;
 
 import com.MoneyLog.dto.CategorySummaryDto;
+import com.MoneyLog.model.Category;
 import com.MoneyLog.model.Expense;
 import com.MoneyLog.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -45,4 +46,6 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
+
+    boolean existsByCategory(Category category);
 }

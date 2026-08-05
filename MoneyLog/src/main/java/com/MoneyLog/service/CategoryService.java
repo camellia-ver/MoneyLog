@@ -1,11 +1,13 @@
 package com.MoneyLog.service;
 
 import com.MoneyLog.exception.CategoryAccessDeniedException;
+import com.MoneyLog.exception.CategoryHasExpensesException;
 import com.MoneyLog.exception.CategoryNotFoundException;
 import com.MoneyLog.exception.DuplicateCategoryException;
 import com.MoneyLog.model.Category;
 import com.MoneyLog.model.User;
 import com.MoneyLog.repository.CategoryRepository;
+import com.MoneyLog.repository.ExpenseRepository;
 import com.MoneyLog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import java.util.List;
 public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final UserService userService;
+    private final ExpenseRepository expenseRepository;
 
     @Transactional
     public Category createCategory(Long userId, String name){
@@ -44,6 +47,11 @@ public class CategoryService {
     @Transactional
     public void deleteCategory(Long userId, Long categoryId){
         Category category = getCategoryByIdAndUser(categoryId, userId);
+
+        if (expenseRepository.existsByCategory(category)){
+            throw new CategoryHasExpensesException();
+        }
+
         categoryRepository.delete(category);
     }
 
