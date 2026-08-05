@@ -48,17 +48,20 @@ async function loadDashboardData() {
 
             const createdDate = new Date(expense.createdAt).toLocaleDateString();
 
-            li.innerHTML = `
-                <div class="d-flex justify-content-between" style="cursor: pointer;"
-                    data-bs-toggle="collapse" data-bs-target="#detail-${expense.id}">
-                    <span>${expense.content} <small class="text-secondary">(${expense.categoryName})</small></span>
-                    <span>₩${expense.amount.toLocaleString()}</span>
-                </div>
-                <div class="collapse mt-2 ps-2" id="detail-${expense.id}">
-                    <p class="text-secondary mb-1">메모: ${expense.memo || "없음"}</p>
-                    <p class="text-secondary mb-0">등록일: ${createdDate}</p>
-                </div>
-            `;
+li.innerHTML = `
+                    <div class="d-flex justify-content-between" style="cursor: pointer;"
+                         data-bs-toggle="collapse" data-bs-target="#detail-${expense.id}">
+                        <span>${expense.content} <small class="text-secondary">(${expense.categoryName})</small></span>
+                        <span>₩${expense.amount.toLocaleString()}</span>
+                    </div>
+                    <div class="collapse mt-2 ps-2" id="detail-${expense.id}">
+                        <p class="text-secondary mb-1">메모: ${expense.memo || "없음"}</p>
+                        <p class="text-secondary mb-2">등록일: ${createdDate}</p>
+                        <button class="btn btn-sm btn-outline-danger" data-expense-id="${expense.id}" data-action="delete">
+                            삭제
+                        </button>
+                    </div>
+                `;
             expenseList.appendChild(li);
         });
         }
@@ -131,5 +134,24 @@ document.getElementById("expenseForm").addEventListener("submit", async function
         const errorMessage = document.getElementById("expenseErrorMessage");
         errorMessage.classList.remove("d-none");
         errorMessage.textContent = error.message;
+    }
+});
+
+document.getElementById("expenseList").addEventListener("click", async function (event) {
+    if (event.target.dataset.action !== "delete") {
+        return; // 삭제 버튼이 아니면 무시
+    }
+
+    const expenseId = event.target.dataset.expenseId;
+
+    if (!confirm("정말 삭제하시겠습니까?")) {
+        return;
+    }
+
+    try {
+        await apiRequest(`/api/expenses/${expenseId}`, { method: "DELETE" });
+        await loadDashboardData();
+    } catch (error) {
+        alert("삭제 중 오류가 발생했습니다: " + error.message);
     }
 });
