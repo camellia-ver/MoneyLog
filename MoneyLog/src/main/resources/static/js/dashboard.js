@@ -43,14 +43,24 @@ async function loadDashboardData() {
             expenseList.innerHTML = `<li class="text-secondary">등록된 지출이 없습니다.</li>`;
         } else {
             expenses.forEach((expense) => {
-                const li = document.createElement("li");
-                li.className = "d-flex justify-content-between mb-2";
-                li.innerHTML = `
+            const li = document.createElement("li");
+            li.className = "mb-2";
+
+            const createdDate = new Date(expense.createdAt).toLocaleDateString();
+
+            li.innerHTML = `
+                <div class="d-flex justify-content-between" style="cursor: pointer;"
+                    data-bs-toggle="collapse" data-bs-target="#detail-${expense.id}">
                     <span>${expense.content} <small class="text-secondary">(${expense.categoryName})</small></span>
                     <span>₩${expense.amount.toLocaleString()}</span>
-                `;
-                expenseList.appendChild(li);
-            });
+                </div>
+                <div class="collapse mt-2 ps-2" id="detail-${expense.id}">
+                    <p class="text-secondary mb-1">메모: ${expense.memo || "없음"}</p>
+                    <p class="text-secondary mb-0">등록일: ${createdDate}</p>
+                </div>
+            `;
+            expenseList.appendChild(li);
+        });
         }
     } catch (error) {
         alert("데이터를 불러오는 중 오류가 발생했습니다: " + error.message);
