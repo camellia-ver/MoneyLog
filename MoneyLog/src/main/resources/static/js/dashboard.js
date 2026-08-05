@@ -82,3 +82,44 @@ document.getElementById("categoryForm").addEventListener("submit", async functio
         errorMessage.textContent = error.message;
     }
 });
+
+document.getElementById("expenseModal").addEventListener("shown.bs.modal", async function () {
+    const categories = await apiRequest("/api/categories");
+
+    const select = document.getElementById("expenseCategoryId");
+    select.innerHTML = "";
+
+    categories.forEach((category) => {
+        const option = document.createElement("option");
+        option.value = category.id;
+        option.textContent = category.name;
+        select.appendChild(option);
+    });
+});
+
+document.getElementById("expenseForm").addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const categoryId = document.getElementById("expenseCategoryId").value;
+    const amount = Number(document.getElementById("expenseAmount").value);
+    const content = document.getElementById("expenseContent").value;
+    const memo = document.getElementById("expenseMemo").value;
+
+    try {
+        await apiRequest("/api/expenses", {
+            method: "POST",
+            body: JSON.stringify({ categoryId, amount, content, memo }),
+        });
+
+        const modalElement = document.getElementById("expenseModal");
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        modal.hide();
+
+        event.target.reset();
+        await loadDashboardData();
+    } catch (error) {
+        const errorMessage = document.getElementById("expenseErrorMessage");
+        errorMessage.classList.remove("d-none");
+        errorMessage.textContent = error.message;
+    }
+});
