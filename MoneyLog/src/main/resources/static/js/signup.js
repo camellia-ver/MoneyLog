@@ -12,7 +12,7 @@ document.getElementById("signupForm").addEventListener("submit", async function 
         });
 
         alert("회원가입이 완료되었습니다. 로그인해주세요.")
-        window.location.href = "login.html";
+        window.location.href = "login";
     } catch (error) {
         const errorMessage = document.getElementById("errorMessage");
         errorMessage.classList.remove("d-none");

@@ -3,7 +3,7 @@ let currentCategories = [];
 
 async function initDashboard() {
     if (!isLoggedIn()) {
-        window.location.href = "login.html";
+        window.location.href = "login";
         return;
     }
 
@@ -293,6 +293,6 @@ document.getElementById("logoutButton").addEventListener("click", async function
         console.error("로그아웃 API 호출 실패:", error.message);
     } finally {
         clearToken();
-        window.location.href = "index.html";
+        window.location.href = "index";
     }
 });

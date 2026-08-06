@@ -11,7 +11,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     });
 
     saveToken(result.token);
-    window.location.href = "dashboard.html";
+    window.location.href = "dashboard";
   } catch (error) {
     const errorMessage = document.getElementById("errorMessage");
     errorMessage.classList.remove("d-none");
