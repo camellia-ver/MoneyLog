@@ -87,6 +87,7 @@ async function loadDashboardData() {
             li.className = "d-flex justify-content-between mb-2";
             li.innerHTML = `
                 <span>${category.name}</span>
+                <button class="btn btn-sm btn-outline-secondary me-2" data-category-id="${category.id}" data-action="edit">수정</button>
                 <button class="btn btn-sm btn-outline-danger" data-category-id="${category.id}" data-action="delete">삭제</button>
             `;
             categoryManageList.appendChild(li);
@@ -249,21 +250,38 @@ document.getElementById("categoryList").addEventListener("click", async function
     }
 });
 
-document.getElementById("categoryManageList").addEventListener("click", async function (event) {
-    if (event.target.dataset.action !== "delete") {
-        return;
-    }
+document.getElementById("categoryForm").addEventListener("submit", async function (event) {
+    event.preventDefault();
 
-    const categoryId = event.target.dataset.categoryId;
-
-    if (!confirm("정말 삭제하시겠습니까?")) {
-        return;
-    }
+    const name = document.getElementById("categoryName").value;
+    const editingId = event.target.dataset.editingId;
 
     try {
-        await apiRequest(`/api/categories/${categoryId}`, { method: "DELETE" });
+        if (editingId) {
+            await apiRequest(`/api/categories/${editingId}`, {
+                method: "PUT",
+                body: JSON.stringify({ name }),
+            });
+        } else {
+            await apiRequest("/api/categories", {
+                method: "POST",
+                body: JSON.stringify({ name }),
+            });
+        }
+
+        const modalElement = document.getElementById("categoryModal");
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        modal.hide();
+
+        event.target.reset();
+        delete event.target.dataset.editingId;
+        document.querySelector("#categoryModal .modal-title").textContent = "카테고리 추가";
+        document.querySelector("#categoryForm button[type=submit]").textContent = "추가하기";
+
         await loadDashboardData();
     } catch (error) {
-        alert("삭제 중 오류가 발생했습니다: " + error.message);
+        const errorMessage = document.getElementById("categoryErrorMessage");
+        errorMessage.classList.remove("d-none");
+        errorMessage.textContent = error.message;
     }
 });
