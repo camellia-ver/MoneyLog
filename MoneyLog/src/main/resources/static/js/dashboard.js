@@ -285,3 +285,14 @@ document.getElementById("categoryForm").addEventListener("submit", async functio
         errorMessage.textContent = error.message;
     }
 });
+
+document.getElementById("logoutButton").addEventListener("click", async function () {
+    try {
+        await apiRequest("/api/users/logout", { method: "POST" });
+    } catch (error) {
+        console.error("로그아웃 API 호출 실패:", error.message);
+    } finally {
+        clearToken();
+        window.location.href = "index.html";
+    }
+});
