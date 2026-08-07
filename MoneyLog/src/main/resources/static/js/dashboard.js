@@ -1,4 +1,4 @@
-let currentExpense = [];
+let currentExpenses = [];
 let currentCategories = [];
 
 async function initDashboard() {
@@ -7,22 +7,41 @@ async function initDashboard() {
         return;
     }
 
-    await loadDashboardData();
-}
-
-async function loadDashboardData() {
     const today = new Date();
     const startDate = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split("T")[0];
     const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split("T")[0];
 
+    document.getElementById("filterStartDate").value = startDate;
+    document.getElementById("filterEndDate").value = endDate;
+
+    await loadDashboardData(startDate, endDate, "");
+}
+
+async function loadDashboardData(startDate, endDate, categoryId) {
     try {
+        const expenseUrl = categoryId
+            ? `/api/expenses?categoryId=${categoryId}&startDate=${startDate}&endDate=${endDate}`
+            : `/api/expenses?startDate=${startDate}&endDate=${endDate}`;
+
         const [summary, expenses, categories] = await Promise.all([
             apiRequest(`/api/expenses/summary?startDate=${startDate}&endDate=${endDate}`),
-            apiRequest("/api/expenses"),
+            apiRequest(expenseUrl),
             apiRequest("/api/categories"),
         ]);
-        currentExpenses = expenses; 
+        currentExpenses = expenses;
         currentCategories = categories;
+
+        // 필터의 카테고리 select 채우기 (매번 최신 목록 유지)
+        const filterCategorySelect = document.getElementById("filterCategoryId");
+        const selectedValue = filterCategorySelect.value;
+        filterCategorySelect.innerHTML = `<option value="">전체</option>`;
+        categories.forEach((category) => {
+            const option = document.createElement("option");
+            option.value = category.id;
+            option.textContent = category.name;
+            filterCategorySelect.appendChild(option);
+        });
+        filterCategorySelect.value = selectedValue;
 
         // 이번 달 총 소비
         document.getElementById("totalAmount").textContent =
@@ -32,26 +51,24 @@ async function loadDashboardData() {
         const categoryList = document.getElementById("categoryList");
         categoryList.innerHTML = "";
         if (summary.categorySummaryList.length === 0) {
-            categoryList.innerHTML = `<li class="text-secondary">이번 달 지출 카테고리가 없습니다.</li>`;
+            categoryList.innerHTML = `<li class="text-secondary">조회된 카테고리가 없습니다.</li>`;
         } else {
             summary.categorySummaryList.forEach((categorySummary) => {
                 const li = document.createElement("li");
                 li.className = "d-flex justify-content-between mb-2";
                 li.innerHTML = `
                     <span>${categorySummary.categoryName}</span>
-                    <span>
-                        ₩${categorySummary.totalAmount.toLocaleString()}
-                    </span>
+                    <span>₩${categorySummary.totalAmount.toLocaleString()}</span>
                 `;
                 categoryList.appendChild(li);
             });
         }
 
-        // 최근 지출 목록
+        // 지출 목록
         const expenseList = document.getElementById("expenseList");
         expenseList.innerHTML = "";
         if (expenses.length === 0) {
-            expenseList.innerHTML = `<li class="text-secondary">등록된 지출이 없습니다.</li>`;
+            expenseList.innerHTML = `<li class="text-secondary">조회된 지출이 없습니다.</li>`;
         } else {
             expenses.forEach((expense) => {
                 const li = document.createElement("li");
@@ -80,6 +97,7 @@ async function loadDashboardData() {
             });
         }
 
+        // 카테고리 관리
         const categoryManageList = document.getElementById("categoryManageList");
         categoryManageList.innerHTML = "";
         categories.forEach((category) => {
@@ -87,8 +105,10 @@ async function loadDashboardData() {
             li.className = "d-flex justify-content-between mb-2";
             li.innerHTML = `
                 <span>${category.name}</span>
-                <button class="btn btn-sm btn-outline-secondary me-2" data-category-id="${category.id}" data-action="edit">수정</button>
-                <button class="btn btn-sm btn-outline-danger" data-category-id="${category.id}" data-action="delete">삭제</button>
+                <span>
+                    <button class="btn btn-sm btn-outline-secondary me-2" data-category-id="${category.id}" data-action="edit">수정</button>
+                    <button class="btn btn-sm btn-outline-danger" data-category-id="${category.id}" data-action="delete">삭제</button>
+                </span>
             `;
             categoryManageList.appendChild(li);
         });
@@ -99,23 +119,49 @@ async function loadDashboardData() {
 
 initDashboard();
 
+// 필터 폼 제출
+document.getElementById("filterForm").addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const startDate = document.getElementById("filterStartDate").value;
+    const endDate = document.getElementById("filterEndDate").value;
+    const categoryId = document.getElementById("filterCategoryId").value;
+
+    await loadDashboardData(startDate, endDate, categoryId);
+});
+
 document.getElementById("categoryForm").addEventListener("submit", async function (event) {
     event.preventDefault();
 
     const name = document.getElementById("categoryName").value;
+    const editingId = event.target.dataset.editingId;
 
     try {
-        await apiRequest("/api/categories", {
-            method: "POST",
-            body: JSON.stringify({ name }),
-        });
+        if (editingId) {
+            await apiRequest(`/api/categories/${editingId}`, {
+                method: "PUT",
+                body: JSON.stringify({ name }),
+            });
+        } else {
+            await apiRequest("/api/categories", {
+                method: "POST",
+                body: JSON.stringify({ name }),
+            });
+        }
 
         const modalElement = document.getElementById("categoryModal");
         const modal = bootstrap.Modal.getInstance(modalElement);
         modal.hide();
 
         event.target.reset();
-        await loadDashboardData();
+        delete event.target.dataset.editingId;
+        document.querySelector("#categoryModal .modal-title").textContent = "카테고리 추가";
+        document.querySelector("#categoryForm button[type=submit]").textContent = "추가하기";
+
+        const startDate = document.getElementById("filterStartDate").value;
+        const endDate = document.getElementById("filterEndDate").value;
+        const categoryId = document.getElementById("filterCategoryId").value;
+        await loadDashboardData(startDate, endDate, categoryId);
     } catch (error) {
         const errorMessage = document.getElementById("categoryErrorMessage");
         errorMessage.classList.remove("d-none");
@@ -124,12 +170,9 @@ document.getElementById("categoryForm").addEventListener("submit", async functio
 });
 
 document.getElementById("expenseModal").addEventListener("shown.bs.modal", async function () {
-    const categories = await apiRequest("/api/categories");
-
     const select = document.getElementById("expenseCategoryId");
     select.innerHTML = "";
-
-    categories.forEach((category) => {
+    currentCategories.forEach((category) => {
         const option = document.createElement("option");
         option.value = category.id;
         option.textContent = category.name;
@@ -166,10 +209,13 @@ document.getElementById("expenseForm").addEventListener("submit", async function
 
         event.target.reset();
         delete event.target.dataset.editingId;
-        document.querySelector("#expenseModal .modal-title").textContent = "지출 추가"; 
-        document.querySelector("#expenseForm button[type=submit]").textContent = "추가하기"; 
-        
-        await loadDashboardData();
+        document.querySelector("#expenseModal .modal-title").textContent = "지출 추가";
+        document.querySelector("#expenseForm button[type=submit]").textContent = "추가하기";
+
+        const startDate = document.getElementById("filterStartDate").value;
+        const endDate = document.getElementById("filterEndDate").value;
+        const categoryId2 = document.getElementById("filterCategoryId").value;
+        await loadDashboardData(startDate, endDate, categoryId2);
     } catch (error) {
         const errorMessage = document.getElementById("expenseErrorMessage");
         errorMessage.classList.remove("d-none");
@@ -179,7 +225,7 @@ document.getElementById("expenseForm").addEventListener("submit", async function
 
 document.getElementById("expenseList").addEventListener("click", async function (event) {
     const action = event.target.dataset.action;
-    
+
     if (action === "delete") {
         const expenseId = event.target.dataset.expenseId;
 
@@ -189,18 +235,20 @@ document.getElementById("expenseList").addEventListener("click", async function 
 
         try {
             await apiRequest(`/api/expenses/${expenseId}`, { method: "DELETE" });
-            await loadDashboardData();
+            const startDate = document.getElementById("filterStartDate").value;
+            const endDate = document.getElementById("filterEndDate").value;
+            const categoryId = document.getElementById("filterCategoryId").value;
+            await loadDashboardData(startDate, endDate, categoryId);
         } catch (error) {
             alert("삭제 중 오류가 발생했습니다: " + error.message);
         }
-        return; 
+        return;
     }
 
     if (action === "edit") {
         const expenseId = event.target.dataset.expenseId;
         const expense = currentExpenses.find(e => e.id === Number(expenseId));
 
-        // 1. 카테고리 select 채우기 (기존 categories 배열 재사용)
         const select = document.getElementById("expenseCategoryId");
         select.innerHTML = "";
         currentCategories.forEach((category) => {
@@ -210,89 +258,57 @@ document.getElementById("expenseList").addEventListener("click", async function 
             select.appendChild(option);
         });
 
-        // 2. 필드 채우기
         const matchedCategory = currentCategories.find(c => c.name === expense.categoryName);
         select.value = matchedCategory.id;
         document.getElementById("expenseAmount").value = expense.amount;
         document.getElementById("expenseContent").value = expense.content;
         document.getElementById("expenseMemo").value = expense.memo || "";
 
-        // 3. 수정 중인 id 기록
         document.getElementById("expenseForm").dataset.editingId = expense.id;
 
-        // 4. 텍스트 변경
         document.querySelector("#expenseModal .modal-title").textContent = "지출 수정";
         document.querySelector("#expenseForm button[type=submit]").textContent = "수정하기";
 
-        // 5. 모달 열기
         const modal = new bootstrap.Modal(document.getElementById("expenseModal"));
         modal.show();
         return;
     }
 });
 
-document.getElementById("categoryList").addEventListener("click", async function (event) {
-    if (event.target.dataset.action !== "delete") {
-        return;
-    }
+document.getElementById("categoryManageList").addEventListener("click", async function (event) {
+    const action = event.target.dataset.action;
 
-    const categoryId = event.target.dataset.categoryId;
+    if (action === "delete") {
+        const categoryId = event.target.dataset.categoryId;
 
-    if (!confirm("정말 삭제하시겠습니까?")) {
-        return;
-    }
-
-    try {
-        await apiRequest(`/api/categories/${categoryId}`, { method: "DELETE" });
-        await loadDashboardData();
-    } catch (error) {
-        alert("삭제 중 오류가 발생했습니다: " + error.message);
-    }
-});
-
-document.getElementById("categoryForm").addEventListener("submit", async function (event) {
-    event.preventDefault();
-
-    const name = document.getElementById("categoryName").value;
-    const editingId = event.target.dataset.editingId;
-
-    try {
-        if (editingId) {
-            await apiRequest(`/api/categories/${editingId}`, {
-                method: "PUT",
-                body: JSON.stringify({ name }),
-            });
-        } else {
-            await apiRequest("/api/categories", {
-                method: "POST",
-                body: JSON.stringify({ name }),
-            });
+        if (!confirm("정말 삭제하시겠습니까?")) {
+            return;
         }
 
-        const modalElement = document.getElementById("categoryModal");
-        const modal = bootstrap.Modal.getInstance(modalElement);
-        modal.hide();
-
-        event.target.reset();
-        delete event.target.dataset.editingId;
-        document.querySelector("#categoryModal .modal-title").textContent = "카테고리 추가";
-        document.querySelector("#categoryForm button[type=submit]").textContent = "추가하기";
-
-        await loadDashboardData();
-    } catch (error) {
-        const errorMessage = document.getElementById("categoryErrorMessage");
-        errorMessage.classList.remove("d-none");
-        errorMessage.textContent = error.message;
+        try {
+            await apiRequest(`/api/categories/${categoryId}`, { method: "DELETE" });
+            const startDate = document.getElementById("filterStartDate").value;
+            const endDate = document.getElementById("filterEndDate").value;
+            const filterCategoryId = document.getElementById("filterCategoryId").value;
+            await loadDashboardData(startDate, endDate, filterCategoryId);
+        } catch (error) {
+            alert("삭제 중 오류가 발생했습니다: " + error.message);
+        }
+        return;
     }
-});
 
-document.getElementById("logoutButton").addEventListener("click", async function () {
-    try {
-        await apiRequest("/api/users/logout", { method: "POST" });
-    } catch (error) {
-        console.error("로그아웃 API 호출 실패:", error.message);
-    } finally {
-        clearToken();
-        window.location.href = "index";
+    if (action === "edit") {
+        const categoryId = event.target.dataset.categoryId;
+        const category = currentCategories.find(c => c.id === Number(categoryId));
+
+        document.getElementById("categoryName").value = category.name;
+        document.getElementById("categoryForm").dataset.editingId = category.id;
+
+        document.querySelector("#categoryModal .modal-title").textContent = "카테고리 수정";
+        document.querySelector("#categoryForm button[type=submit]").textContent = "수정하기";
+
+        const modal = new bootstrap.Modal(document.getElementById("categoryModal"));
+        modal.show();
+        return;
     }
 });

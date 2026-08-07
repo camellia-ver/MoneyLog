@@ -17,11 +17,33 @@
         <button id="logoutButton" class="btn btn-secondary-custom btn-sm">로그아웃</button>
     </div>
 
-        <!-- Summary Card -->
-        <div class="card-custom mb-4">
-            <p class="text-secondary mb-1">이번 달 소비</p>
-            <h2 id="totalAmount">₩0</h2>
-        </div>
+    <!-- Summary Card -->
+    <div class="card-custom mb-4">
+        <p class="text-secondary mb-1">이번 달 소비</p>
+        <h2 id="totalAmount">₩0</h2>
+    </div>
+
+    <div class="card-custom mb-4">
+        <form id="filterForm" class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label for="filterStartDate" class="form-label">시작일</label>
+                <input type="date" class="form-control input-custom" id="filterStartDate">
+            </div>
+            <div class="col-md-3">
+                <label for="filterEndDate" class="form-label">종료일</label>
+                <input type="date" class="form-control input-custom" id="filterEndDate">
+            </div>
+            <div class="col-md-3">
+                <label for="filterCategoryId" class="form-label">카테고리</label>
+                <select class="form-select input-custom" id="filterCategoryId">
+                    <option value="">전체</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary-custom w-100">조회</button>
+            </div>
+        </form>
+    </div>
 
         <!-- Category Summary -->
         <div class="card-custom mb-4">
