@@ -48,4 +48,5 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     );
 
     boolean existsByCategory(Category category);
+    void deleteAllByUser(User user);
 }

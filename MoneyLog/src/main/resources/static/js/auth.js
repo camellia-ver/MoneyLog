@@ -7,7 +7,7 @@ function getToken(){
 }
 
 function clearToken(){
-    localStorage.removeItem("toekn");
+    localStorage.removeItem("token");
 }
 
 function isLoggedIn(){

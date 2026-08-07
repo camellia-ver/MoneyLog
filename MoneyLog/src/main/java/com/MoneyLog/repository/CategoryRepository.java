@@ -11,4 +11,5 @@ import java.util.List;
 public interface CategoryRepository extends JpaRepository<Category, Long> {
     boolean existsByUserAndName(User user, String name);
     List<Category> findByUser(User user);
+    void deleteAllByUser(User user);
 }

@@ -1,16 +1,19 @@
 package com.MoneyLog.exception;
 
 import com.MoneyLog.dto.ErrorResponseDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateEmailException.class)
@@ -41,7 +44,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleUserNotFound(UserNotFoundException  e){
-        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, "인증이 만료되었거나 존재하지 않는 사용자입니다.");
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponseDto> handleMissingParam(MissingServletRequestParameterException e) {
+        log.warn("Missing parameter: {}", e.getMessage());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST,
+                "필수 파라미터가 누락되었습니다: " + e.getParameterName());
     }
 
     @ExceptionHandler(CategoryNotFoundException.class)
@@ -73,6 +83,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CategoryHasExpensesException.class)
     public ResponseEntity<ErrorResponseDto> handleCategoryHasExpenses(CategoryHasExpensesException e){
         return buildErrorResponse(HttpStatus.CONFLICT, e.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponseDto> handleUnexpected(Exception e) {
+        log.error("Unhandled exception occurred", e);
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.");
     }
 
     private ResponseEntity<ErrorResponseDto> buildErrorResponse(HttpStatus status, String message){

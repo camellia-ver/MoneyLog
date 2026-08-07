@@ -7,6 +7,8 @@ import com.MoneyLog.exception.InvalidCredentialsException;
 import com.MoneyLog.exception.InvalidPasswordException;
 import com.MoneyLog.exception.UserNotFoundException;
 import com.MoneyLog.model.User;
+import com.MoneyLog.repository.CategoryRepository;
+import com.MoneyLog.repository.ExpenseRepository;
 import com.MoneyLog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class UserService {
     private final UserRepository userRepository;
+    private final ExpenseRepository expenseRepository;
+    private final CategoryRepository categoryRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -80,6 +84,8 @@ public class UserService {
             throw new InvalidPasswordException();
         }
 
+        expenseRepository.deleteAllByUser(user);
+        categoryRepository.deleteAllByUser(user);
         userRepository.delete(user);
     }
 }
