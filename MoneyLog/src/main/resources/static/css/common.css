@@ -53,6 +53,9 @@ a:hover {
    Primary Button
    ============================ */
 .btn-primary-custom {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   height: 52px;
   padding: 0 var(--space-4);
   border-radius: var(--radius-full);
@@ -91,6 +94,9 @@ a:hover {
    Secondary Button
    ============================ */
 .btn-secondary-custom {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   height: 52px;
   padding: 0 var(--space-4);
   border-radius: var(--radius-full);
