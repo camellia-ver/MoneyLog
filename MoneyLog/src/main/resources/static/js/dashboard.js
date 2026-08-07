@@ -1,5 +1,6 @@
 let currentExpenses = [];
 let currentCategories = [];
+let categoryChart = null;
 
 async function initDashboard() {
     if (!isLoggedIn()) {
@@ -63,6 +64,7 @@ async function loadDashboardData(startDate, endDate, categoryId) {
                 categoryList.appendChild(li);
             });
         }
+        renderCategoryChart(summary.categorySummaryList);
 
         // 지출 목록
         const expenseList = document.getElementById("expenseList");
@@ -312,3 +314,26 @@ document.getElementById("categoryManageList").addEventListener("click", async fu
         return;
     }
 });
+
+function renderCategoryChart(categorySummaryList) {
+    const ctx = document.getElementById("categoryChart");
+
+    // 기존 차트가 있다면 먼저 파괴 (겹쳐 그려지는 것 방지)
+    if (categoryChart) {
+        categoryChart.destroy();
+    }
+
+    const labels = categorySummaryList.map(c => c.categoryName);
+    const data = categorySummaryList.map(c => c.totalAmount);
+
+    categoryChart = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: ["#FF8FB8", "#72D6C9", "#FFD166", "#7CC8FF", "#A6E3A1"],
+            }],
+        },
+    });
+}

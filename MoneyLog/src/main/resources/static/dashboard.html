@@ -45,17 +45,18 @@
         </form>
     </div>
 
-        <!-- Category Summary -->
-        <div class="card-custom mb-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="mb-0">카테고리별 지출</h5>
-                <button type="button" class="btn btn-secondary-custom btn-sm"
-                        data-bs-toggle="modal" data-bs-target="#categoryModal">
-                    + 카테고리 추가
-                </button>
-            </div>
-            <ul id="categoryList" class="list-unstyled"></ul>
+    <!-- Category Summary -->
+    <div class="card-custom mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">카테고리별 지출</h5>
+            <button type="button" class="btn btn-secondary-custom btn-sm"
+                    data-bs-toggle="modal" data-bs-target="#categoryModal">
+                + 카테고리 추가
+            </button>
         </div>
+        <canvas id="categoryChart" style="max-height: 250px;"></canvas>
+        <ul id="categoryList" class="list-unstyled mt-3"></ul>
+    </div>
 
         <!-- Category Management -->
         <div class="card-custom mb-4">
@@ -131,6 +132,8 @@
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 
