@@ -15,6 +15,7 @@ async function initDashboard() {
     document.getElementById("filterStartDate").value = startDate;
     document.getElementById("filterEndDate").value = endDate;
 
+    await renderMonthlySummary();
     await loadDashboardData(startDate, endDate, "");
 }
 
@@ -43,10 +44,6 @@ async function loadDashboardData(startDate, endDate, categoryId) {
             filterCategorySelect.appendChild(option);
         });
         filterCategorySelect.value = selectedValue;
-
-        // 이번 달 총 소비
-        document.getElementById("totalAmount").textContent =
-            `₩${summary.totalAmount.toLocaleString()}`;
 
         // 카테고리별 지출
         const categoryList = document.getElementById("categoryList");
@@ -336,4 +333,55 @@ function renderCategoryChart(categorySummaryList) {
             }],
         },
     });
+}
+
+function getPreviousMonthRange(year, month) {
+    // month는 0부터 시작(JS Date 관례) - 1월이 0
+    const prevMonthDate = new Date(year, month - 1, 1);
+    const prevYear = prevMonthDate.getFullYear();
+    const prevMonth = prevMonthDate.getMonth();
+
+    const start = new Date(prevYear, prevMonth, 1).toISOString().split("T")[0];
+    const end = new Date(prevYear, prevMonth + 1, 0).toISOString().split("T")[0];
+
+    return { start, end };
+}
+
+async function renderMonthlySummary() {
+    const today = new Date();
+    const currentStart = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split("T")[0];
+    const currentEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split("T")[0];
+
+    const { start: prevStart, end: prevEnd } = getPreviousMonthRange(today.getFullYear(), today.getMonth());
+
+    const [currentSummary, prevSummary] = await Promise.all([
+        apiRequest(`/api/expenses/summary?startDate=${currentStart}&endDate=${currentEnd}`),
+        apiRequest(`/api/expenses/summary?startDate=${prevStart}&endDate=${prevEnd}`),
+    ]);
+
+    const currentTotal = currentSummary.totalAmount;
+    const prevTotal = prevSummary.totalAmount;
+
+    document.getElementById("totalAmount").textContent = `₩${currentTotal.toLocaleString()}`;
+
+    const changeRateElement = document.getElementById("changeRate");
+
+    if (prevTotal === 0) {
+        changeRateElement.textContent = "";
+        return;
+    }
+
+    const changeRate = ((currentTotal - prevTotal) / prevTotal * 100).toFixed(1);
+    const isIncrease = Number(changeRate) > 0;
+    const isDecrease = Number(changeRate) < 0;
+
+    const sign = isIncrease ? "+" : ""; // 음수는 toFixed 결과 자체에 "-"가 이미 포함됨
+    const color = isIncrease
+        ? "var(--color-expense)"
+        : isDecrease
+            ? "var(--color-success)"
+            : "var(--color-text-secondary)";
+
+    changeRateElement.textContent = `${sign}${changeRate}%`;
+    changeRateElement.style.color = color;
 }
