@@ -45,6 +45,8 @@ async function loadDashboardData(startDate, endDate, categoryId) {
         });
         filterCategorySelect.value = selectedValue;
 
+        document.getElementById("totalAmount").textContent = `₩${summary.totalAmount.toLocaleString()}`;
+
         // 카테고리별 지출
         const categoryList = document.getElementById("categoryList");
         categoryList.innerHTML = "";
@@ -361,8 +363,6 @@ async function renderMonthlySummary() {
 
     const currentTotal = currentSummary.totalAmount;
     const prevTotal = prevSummary.totalAmount;
-
-    document.getElementById("totalAmount").textContent = `₩${currentTotal.toLocaleString()}`;
 
     const changeRateElement = document.getElementById("changeRate");
 
