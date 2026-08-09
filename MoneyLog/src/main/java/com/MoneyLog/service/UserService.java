@@ -2,10 +2,7 @@ package com.MoneyLog.service;
 
 import com.MoneyLog.dto.UserDto;
 import com.MoneyLog.enums.Role;
-import com.MoneyLog.exception.DuplicateEmailException;
-import com.MoneyLog.exception.InvalidCredentialsException;
-import com.MoneyLog.exception.InvalidPasswordException;
-import com.MoneyLog.exception.UserNotFoundException;
+import com.MoneyLog.exception.*;
 import com.MoneyLog.model.User;
 import com.MoneyLog.repository.CategoryRepository;
 import com.MoneyLog.repository.ExpenseRepository;
@@ -15,6 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -23,6 +22,7 @@ public class UserService {
     private final ExpenseRepository expenseRepository;
     private final CategoryRepository categoryRepository;
     private final PasswordEncoder passwordEncoder;
+    private final LoginAttemptService loginAttemptService;
 
     @Transactional
     public User signUp(UserDto.SignUpRequest inputData){
@@ -40,15 +40,23 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional
     public User login(String email, String password) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(InvalidCredentialsException::new);
+        if (loginAttemptService.isLocked(email)){
+            throw new AccountLockedException();
+        }
 
-        if (!passwordEncoder.matches(password, user.getPassword())){
+        Optional<User> userOptional = userRepository.findByEmail(email);
+
+        if (userOptional.isEmpty() ||
+                !passwordEncoder.matches(password, userOptional.get().getPassword())){
+            loginAttemptService.loginFailed(email);
             throw new InvalidCredentialsException();
         }
 
-        return user;
+        loginAttemptService.loginSucceeded(email);
+
+        return userOptional.get();
     }
 
     @Transactional

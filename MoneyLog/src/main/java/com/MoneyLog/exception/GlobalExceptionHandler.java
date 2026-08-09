@@ -109,6 +109,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.NOT_FOUND, "요청한 경로를 찾을 수 없습니다.");
     }
 
+    @ExceptionHandler(AccountLockedException.class)
+    public ResponseEntity<ErrorResponseDto> handleAccountLocked(AccountLockedException e) {
+        return buildErrorResponse(HttpStatus.LOCKED, e.getMessage());
+    }
+
     private ResponseEntity<ErrorResponseDto> buildErrorResponse(HttpStatus status, String message){
         ErrorResponseDto error = new ErrorResponseDto(
                 status.value(),
