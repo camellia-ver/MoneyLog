@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>QA retest2 (temp)</title></head>
+<body>
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="auth-title mb-0">MoneyLog</h1>
+        <button id="logoutButton" class="btn btn-secondary-custom btn-sm">로그아웃</button>
+    </div>
+    <div class="card-custom mb-4">
+        <p class="text-secondary mb-1">이번 달 소비</p>
+        <div class="d-flex align-items-baseline">
+            <h2 id="totalAmount" class="mb-0 me-2">₩50,000</h2>
+            <span id="changeRate" style="color: var(--color-expense);">+150.0%</span>
+        </div>
+    </div>
+    <div class="card-custom mb-4">
+        <form id="filterForm" class="row g-2 align-items-end">
+            <div class="col-md-3"><label for="filterStartDate" class="form-label">시작일</label><input type="date" class="form-control input-custom" id="filterStartDate"></div>
+            <div class="col-md-3"><label for="filterEndDate" class="form-label">종료일</label><input type="date" class="form-control input-custom" id="filterEndDate"></div>
+            <div class="col-md-3"><label for="filterCategoryId" class="form-label">카테고리</label><select class="form-select input-custom" id="filterCategoryId"><option value="">전체</option><option value="41">ChangeRateTestCat</option></select></div>
+            <div class="col-md-3"><button type="submit" class="btn btn-primary-custom w-100">조회</button></div>
+        </form>
+    </div>
+    <div class="card-custom mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3"><h5 class="mb-0">카테고리별 지출</h5><button type="button" class="btn btn-secondary-custom btn-sm" data-bs-toggle="modal" data-bs-target="#categoryModal">+ 카테고리 추가</button></div>
+        <canvas id="categoryChart" style="max-height: 250px; box-sizing: border-box; display: block; height: 250px; width: 731px;" width="731" height="250"></canvas>
+        <ul id="categoryList" class="list-unstyled mt-3"><li class="text-secondary">조회된 카테고리가 없습니다.</li></ul>
+    </div>
+    <div class="card-custom mb-4"><h5 class="mb-3">카테고리 관리</h5><ul id="categoryManageList" class="list-unstyled"><li class="d-flex justify-content-between mb-2">
+                <span>ChangeRateTestCat</span>
+                <span>
+                    <button class="btn btn-sm btn-outline-secondary me-2" data-category-id="41" data-action="edit">수정</button>
+                    <button class="btn btn-sm btn-outline-danger" data-category-id="41" data-action="delete">삭제</button>
+                </span>
+            </li></ul></div>
+    <div class="card-custom">
+        <div class="d-flex justify-content-between align-items-center mb-3"><h5 class="mb-0">최근 지출</h5><button type="button" class="btn btn-primary-custom btn-sm" data-bs-toggle="modal" data-bs-target="#expenseModal">+ 지출 추가</button></div>
+        <ul id="expenseList" class="list-unstyled"><li class="text-secondary">조회된 지출이 없습니다.</li></ul>
+    </div>
+    </div>
+
+    <div class="modal fade" id="categoryModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">카테고리 추가</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body"><form id="categoryForm"><div class="mb-3"><label for="categoryName" class="form-label">카테고리명</label><input type="text" class="form-control input-custom" id="categoryName" required=""></div><div id="categoryErrorMessage" class="text-danger mb-3 d-none"></div><button type="submit" class="btn btn-primary-custom w-100">추가하기</button></form></div>
+    </div></div></div>
+
+    <div class="modal fade" id="expenseModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">지출 추가</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body"><form id="expenseForm">
+            <div class="mb-3"><label for="expenseCategoryId" class="form-label">카테고리</label><select class="form-select input-custom" id="expenseCategoryId" required=""></select></div>
+            <div class="mb-3"><label for="expenseAmount" class="form-label">금액</label><input type="number" class="form-control input-custom" id="expenseAmount" required=""></div>
+            <div class="mb-3"><label for="expenseContent" class="form-label">내용</label><input type="text" class="form-control input-custom" id="expenseContent" required=""></div>
+            <div class="mb-3"><label for="expenseMemo" class="form-label">메모</label><input type="text" class="form-control input-custom" id="expenseMemo"></div>
+            <div id="expenseErrorMessage" class="text-danger mb-3 d-none"></div>
+            <button type="submit" class="btn btn-primary-custom w-100">추가하기</button>
+        </form></div>
+    </div></div></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      localStorage.setItem("token", "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1MCIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzg2MTY4MTg0LCJleHAiOjE3ODYxNzE3ODR9.eUd2G_sWOH21lNMXQ-WhUvosbTjl4fzx6d8gS0UIihT19vp8TjmZcu21ToM3umz-S5IO58Od2Gp7u85VZC_0Ow");
+      window.confirm = function(){ return true; }; // TC-071 삭제 확인 다이얼로그는 headless라 자동 승인으로 대체(로직 자체는 실행)
+    </script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script>
+      setTimeout(async function () {
+        const before = {
+          expenseList_항목수: document.getElementById("expenseList").children.length,
+          categoryManageList_HTML: document.getElementById("categoryManageList").innerHTML,
+        };
+
+        // TC-071: 지출 목록에서 삭제 버튼 클릭 -> confirm(자동 true) -> 실제 DELETE API 호출 -> 목록 갱신
+        const deleteBtn = document.querySelector('#expenseList [data-action="delete"]');
+        let deleteBtnFound = !!deleteBtn;
+        if (deleteBtn) {
+          deleteBtn.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+        }
+        await new Promise(r => setTimeout(r, 1500));
+        const after = {
+          expenseList_항목수: document.getElementById("expenseList").children.length,
+          expenseList_HTML: document.getElementById("expenseList").innerHTML,
+        };
+
+        const resultDiv = document.createElement("div");
+        resultDiv.id = "qa-result2";
+        resultDiv.innerText = JSON.stringify({
+          TC071_삭제버튼_발견됨: deleteBtnFound,
+          TC071_삭제전_항목수: before.expenseList_항목수,
+          TC071_삭제후_항목수: after.expenseList_항목수,
+          TC071_삭제후_리스트HTML: after.expenseList_HTML,
+          TC072_카테고리관리_목록HTML: before.categoryManageList_HTML,
+        }, null, 2);
+        document.body.appendChild(resultDiv);
+      }, 3000);
+    </script>
+
+
+<div id="qa-result2">{<br>  "TC071_삭제버튼_발견됨": true,<br>  "TC071_삭제전_항목수": 1,<br>  "TC071_삭제후_항목수": 1,<br>  "TC071_삭제후_리스트HTML": "&lt;li class=\"text-secondary\"&gt;조회된 지출이 없습니다.&lt;/li&gt;",<br>  "TC072_카테고리관리_목록HTML": "&lt;li class=\"d-flex justify-content-between mb-2\"&gt;\n                &lt;span&gt;ChangeRateTestCat&lt;/span&gt;\n                &lt;span&gt;\n                    &lt;button class=\"btn btn-sm btn-outline-secondary me-2\" data-category-id=\"41\" data-action=\"edit\"&gt;수정&lt;/button&gt;\n                    &lt;button class=\"btn btn-sm btn-outline-danger\" data-category-id=\"41\" data-action=\"delete\"&gt;삭제&lt;/button&gt;\n                &lt;/span&gt;\n            &lt;/li&gt;"<br>}</div></body></html>

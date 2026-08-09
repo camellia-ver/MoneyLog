@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>clearToken repro</title></head>
+<body>
+<div id="result">RUNNING</div>
+<script src="./auth_copy.js"></script>
+<script>
+  // 1) 로그인 시나리오 재현: 토큰 저장
+  localStorage.clear();
+  saveToken("REAL_JWT_TOKEN_VALUE_ABC123");
+  var beforeClear = localStorage.getItem("token");
+
+  // 2) 로그아웃/세션만료 시나리오 재현: clearToken() 호출 (auth.js 실제 코드 그대로 실행)
+  clearToken();
+  var afterClear_token = localStorage.getItem("token");
+  var afterClear_toekn = localStorage.getItem("toekn");
+  var stillLoggedIn = isLoggedIn();
+
+  var report = {
+    "1_로그인직후_token값": beforeClear,
+    "2_clearToken호출후_token키값(정상이라면_null이어야함)": afterClear_token,
+    "3_clearToken호출후_toekn키값(오타로_생성된_키)": afterClear_toekn,
+    "4_clearToken호출후_isLoggedIn()": stillLoggedIn,
+    "5_판정": (afterClear_token !== null) ? "FAIL - 토큰이 삭제되지 않음(버그 재현됨)" : "PASS - 토큰 정상 삭제"
+  };
+
+  document.getElementById("result").innerText = JSON.stringify(report, null, 2);
+</script>
+</body>
+</html>
