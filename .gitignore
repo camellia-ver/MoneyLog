@@ -11,5 +11,3 @@ application-DB.properties
 
 # jwt
 application-secret.properties
-
-application-prod.properties
