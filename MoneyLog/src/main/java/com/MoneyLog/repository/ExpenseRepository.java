@@ -19,13 +19,13 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     @Query("SELECT e FROM Expense e " +
             "WHERE e.user = :user " +
-            "AND (:categoryId IS NULL OR e.category.id = :categoryId) " +
+            "AND (CAST(:categoryId AS long) IS NULL OR e.category.id = CAST(:categoryId AS long)) " +
             "AND (:startDate IS NULL OR e.createdAt >= :startDate) " +
             "AND (:endDate IS NULL OR e.createdAt <= :endDate)")
     List<Expense> searchExpenses(
             @Param("user") User user,
             @Param("categoryId") Long categoryId,
-            @Param("startDate")LocalDateTime startDate,
+            @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );
 
