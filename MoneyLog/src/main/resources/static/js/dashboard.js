@@ -385,3 +385,14 @@ async function renderMonthlySummary() {
     changeRateElement.textContent = `${sign}${changeRate}%`;
     changeRateElement.style.color = color;
 }
+
+document.getElementById("logoutButton").addEventListener("click", async function () {
+    try {
+        await apiRequest("/api/users/logout", { method: "POST" });
+    } catch (error) {
+        console.error("로그아웃 API 호출 실패:", error.message);
+    } finally {
+        clearToken();
+        window.location.href = "/";
+    }
+});
