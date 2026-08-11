@@ -1,4 +1,7 @@
-const BASE_URL = "http://localhost:8080"
+const BASE_URL =
+    window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+        ? "http://localhost:8080"
+        : "";
 
 async function apiRequest(path, options = {}) {
   const token = localStorage.getItem("token");
