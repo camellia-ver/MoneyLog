@@ -17,7 +17,9 @@ async function apiRequest(path, options = {}) {
     headers,
   });
 
-  if (response.status === 401) {
+  const isAuthEndpoint = path.startsWith("/api/users/login") || path.startsWith("/api/users/signup");
+
+  if (response.status === 401 && !isAuthEndpoint) {
     clearToken();
 
     const publicPages = ["/", "/login", "/signup"];
