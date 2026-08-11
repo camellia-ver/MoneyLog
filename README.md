@@ -8,19 +8,12 @@
 
 > 지출을 기록하고, 숫자로 이해하는 가계부 웹앱
 
-<!-- 📸 스크린샷 자리: 대시보드(도넛 차트 + 전월 대비 증감률) -->
 <p align="center">
   <img src="./screenshot/dashboard.png" alt="MoneyLog 대시보드 스크린샷" width="700">
 </p>
 
-<!-- 📸 스크린샷 자리: 지출 목록/필터링 화면 -->
-<p align="center">
-  <img src="./screenshot/expense-list.png" alt="MoneyLog 지출 목록 화면" width="700">
-</p>
-
-<!-- TODO: 배포 데모 링크 추가 (배포 시) -->
-<!-- TODO: 개발 기간 추가 (예: 2026.MM ~ 2026.MM, N주) -->
-
+## 배포 링크
+🔗 [MoneyLog](https://moneylog-4yk2.onrender.com)
 ---
 
 ## 목차
