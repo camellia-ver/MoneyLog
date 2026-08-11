@@ -10,12 +10,12 @@
 
 <!-- 📸 스크린샷 자리: 대시보드(도넛 차트 + 전월 대비 증감률) -->
 <p align="center">
-  <img src="./docs/images/dashboard.png" alt="MoneyLog 대시보드 스크린샷" width="700">
+  <img src="./screenshot/dashboard.png" alt="MoneyLog 대시보드 스크린샷" width="700">
 </p>
 
 <!-- 📸 스크린샷 자리: 지출 목록/필터링 화면 -->
 <p align="center">
-  <img src="./docs/images/expense-list.png" alt="MoneyLog 지출 목록 화면" width="700">
+  <img src="./screenshot/expense-list.png" alt="MoneyLog 지출 목록 화면" width="700">
 </p>
 
 <!-- TODO: 배포 데모 링크 추가 (배포 시) -->
