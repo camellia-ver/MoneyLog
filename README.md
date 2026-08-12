@@ -12,10 +12,6 @@
   <img src="./screenshot/dashboard.png" alt="MoneyLog 대시보드 스크린샷" width="700">
 </p>
 
-## 배포 링크
-🔗 [MoneyLog](https://moneylog-4yk2.onrender.com)
----
-
 ## 목차
 
 - [프로젝트 소개](#프로젝트-소개)
